@@ -289,7 +289,18 @@ struct HJPatternOverlay: View {
                 }
                 .stroke(Color.white.opacity(0.3), lineWidth: 1.6)
             default:
-                EmptyView()
+                // 8 hull colors fold onto this 4-way switch, so every branch has to draw
+                // something — an empty one leaves two hull colors unmarked and silently
+                // defeats the colorblind setting for them.
+                Path { p in
+                    var x: CGFloat = -h
+                    while x < w + h {
+                        p.move(to: CGPoint(x: x, y: h))
+                        p.addLine(to: CGPoint(x: x + h, y: 0))
+                        x += 10
+                    }
+                }
+                .stroke(Color.white.opacity(0.35), lineWidth: 2)
             }
         }
     }

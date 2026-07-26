@@ -147,10 +147,11 @@ struct HJLevelGridView: View {
 
     @ViewBuilder
     private func gameDestination(_ level: Int) -> some View {
+        // No onNext: there is no in-place "next level" navigation, so a "Continue"
+        // button would only duplicate "Back" while implying it advances a level.
         if let game = HJGameView(mode: .campaign(chapter: chapter.index, level: level),
                                  store: store,
-                                 title: "\(chapter.name) · \(level + 1)",
-                                 onNext: { nil }) {
+                                 title: "\(chapter.name) · \(level + 1)") {
             game.environmentObject(store)
         } else {
             Text("Level unavailable")

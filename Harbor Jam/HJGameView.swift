@@ -9,6 +9,11 @@ struct HJGameView: View {
 
     @State private var nextMode: HJGameMode? = nil
 
+    /// HJRootView floats its custom tab bar over every screen, so the game screen has to
+    /// reserve room for it — otherwise the Undo/Restart controls sit underneath it and
+    /// the tab bar swallows their taps.
+    private let tabBarInset: CGFloat = 62
+
     init?(mode: HJGameMode, store: HJStore, title: String, onNext: (() -> HJGameMode?)? = nil) {
         guard let model = HJGameViewModel(mode: mode, store: store) else { return nil }
         _vm = StateObject(wrappedValue: model)
@@ -19,17 +24,20 @@ struct HJGameView: View {
     var body: some View {
         GeometryReader { geo in
             let compact = geo.size.height < 620
+            // The board must subtract EVERY inset it sits inside: the VStack's own
+            // horizontal padding, and vertically the chrome plus the floating tab bar.
+            let boardAvailable = CGSize(
+                width: geo.size.width - 24,
+                height: geo.size.height - (compact ? 170 : 210) - tabBarInset)
             ZStack {
                 HJTheme.cream.ignoresSafeArea()
                 VStack(spacing: compact ? 6 : 12) {
                     header
                     hudRow
-                    HJBoardView(vm: vm, store: store,
-                                available: CGSize(width: geo.size.width,
-                                                  height: geo.size.height - (compact ? 170 : 210)))
+                    HJBoardView(vm: vm, store: store, available: boardAvailable)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     controls
-                        .padding(.bottom, compact ? 6 : 12)
+                        .padding(.bottom, (compact ? 6 : 12) + tabBarInset)
                 }
                 .padding(.horizontal, 12)
 
@@ -157,62 +165,76 @@ struct HJGameView: View {
     private var winOverlay: some View {
         ZStack {
             Color.black.opacity(0.45).ignoresSafeArea()
-            VStack(spacing: 16) {
-                Text("Harbor Cleared!")
-                    .font(HJTheme.display(26))
+            // The card is a fixed-height stack that grows with every achievement banner.
+            // In landscape (~381pt usable, less on an SE) a 3-4 banner card is taller than
+            // the screen and pushes "Back" off the bottom, so it scrolls when it must and
+            // stays centred when it fits.
+            GeometryReader { geo in
+                ScrollView(showsIndicators: false) {
+                    winCard
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: geo.size.height)
+                }
+            }
+        }
+        .onDisappear { store.recentlyUnlocked = [] }
+    }
+
+    private var winCard: some View {
+        VStack(spacing: 16) {
+            Text("Harbor Cleared!")
+                .font(HJTheme.display(26))
+                .foregroundColor(HJTheme.navy)
+            HStack(spacing: 10) {
+                ForEach(0..<3, id: \.self) { i in
+                    HJStarIcon(size: 34, filled: i < vm.earnedStars)
+                }
+            }
+            VStack(spacing: 4) {
+                Text("Moves: \(vm.state.taps)   Par: \(vm.par)")
+                    .font(HJTheme.mono(15))
                     .foregroundColor(HJTheme.navy)
-                HStack(spacing: 10) {
-                    ForEach(0..<3, id: \.self) { i in
-                        HJStarIcon(size: 34, filled: i < vm.earnedStars)
-                    }
+                if vm.undosUsed == 0 {
+                    Text("Flawless — no undo used")
+                        .font(HJTheme.body(12, weight: .semibold))
+                        .foregroundColor(HJTheme.inkSoft)
                 }
-                VStack(spacing: 4) {
-                    Text("Moves: \(vm.state.taps)   Par: \(vm.par)")
-                        .font(HJTheme.mono(15))
-                        .foregroundColor(HJTheme.navy)
-                    if vm.undosUsed == 0 {
-                        Text("Flawless — no undo used")
-                            .font(HJTheme.body(12, weight: .semibold))
-                            .foregroundColor(HJTheme.inkSoft)
-                    }
-                }
-                ForEach(store.recentlyUnlocked, id: \.self) { id in
-                    if let a = HJAchievements.all.first(where: { $0.id == id }) {
-                        HStack(spacing: 8) {
-                            HJTrophyShape().fill(HJTheme.sunGold).frame(width: 16, height: 16)
-                            Text(a.title)
-                                .font(HJTheme.body(12, weight: .bold))
-                                .foregroundColor(HJTheme.navy)
-                        }
-                    }
-                }
-                HStack(spacing: 12) {
-                    Button(action: { presentationMode.wrappedValue.dismiss() }) {
-                        Text("Back")
-                            .font(HJTheme.body(15, weight: .bold))
+            }
+            ForEach(store.recentlyUnlocked, id: \.self) { id in
+                if let a = HJAchievements.all.first(where: { $0.id == id }) {
+                    HStack(spacing: 8) {
+                        HJTrophyShape().fill(HJTheme.sunGold).frame(width: 16, height: 16)
+                        Text(a.title)
+                            .font(HJTheme.body(12, weight: .bold))
                             .foregroundColor(HJTheme.navy)
-                            .padding(.horizontal, 26).padding(.vertical, 12)
-                            .background(Capsule().stroke(HJTheme.navy, lineWidth: 1.6))
-                    }
-                    if onNext != nil {
-                        Button(action: {
-                            store.recentlyUnlocked = []
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Text("Continue")
-                                .font(HJTheme.body(15, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 26).padding(.vertical, 12)
-                                .background(Capsule().fill(HJTheme.navy))
-                        }
                     }
                 }
             }
-            .padding(26)
-            .background(RoundedRectangle(cornerRadius: 20).fill(HJTheme.cream))
-            .padding(.horizontal, 30)
+            HStack(spacing: 12) {
+                Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                    Text("Back")
+                        .font(HJTheme.body(15, weight: .bold))
+                        .foregroundColor(HJTheme.navy)
+                        .padding(.horizontal, 26).padding(.vertical, 12)
+                        .background(Capsule().stroke(HJTheme.navy, lineWidth: 1.6))
+                }
+                if onNext != nil {
+                    Button(action: {
+                        store.recentlyUnlocked = []
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Continue")
+                            .font(HJTheme.body(15, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 26).padding(.vertical, 12)
+                            .background(Capsule().fill(HJTheme.navy))
+                    }
+                }
+            }
         }
-        .onDisappear { store.recentlyUnlocked = [] }
+        .padding(26)
+        .background(RoundedRectangle(cornerRadius: 20).fill(HJTheme.cream))
+        .padding(.horizontal, 30)
     }
 }
 
@@ -229,44 +251,56 @@ struct HJOnboardingOverlay: View {
     var body: some View {
         ZStack {
             Color.black.opacity(0.5).ignoresSafeArea()
-            VStack(spacing: 18) {
-                Text(steps[step].0)
-                    .font(HJTheme.display(22))
-                    .foregroundColor(HJTheme.navy)
-                Text(steps[step].1)
-                    .font(HJTheme.body(14))
-                    .foregroundColor(HJTheme.navy.opacity(0.8))
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                HStack(spacing: 6) {
-                    ForEach(0..<steps.count, id: \.self) { i in
-                        Circle()
-                            .fill(i == step ? HJTheme.navy : HJTheme.navy.opacity(0.25))
-                            .frame(width: 8, height: 8)
-                    }
-                }
-                HStack(spacing: 12) {
-                    Button(action: finish) {
-                        Text("Skip")
-                            .font(HJTheme.body(14, weight: .semibold))
-                            .foregroundColor(HJTheme.inkSoft)
-                    }
-                    Spacer()
-                    Button(action: {
-                        if step < steps.count - 1 { step += 1 } else { finish() }
-                    }) {
-                        Text(step < steps.count - 1 ? "Next" : "Set Sail")
-                            .font(HJTheme.body(15, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 24).padding(.vertical, 11)
-                            .background(Capsule().fill(HJTheme.navy))
-                    }
+            // Same reasoning as the win card: a fixed card is the first thing a reviewer
+            // sees, and in landscape it must never push "Next"/"Set Sail" off-screen.
+            GeometryReader { geo in
+                ScrollView(showsIndicators: false) {
+                    card
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: geo.size.height)
                 }
             }
-            .padding(24)
-            .background(RoundedRectangle(cornerRadius: 20).fill(HJTheme.cream))
-            .padding(.horizontal, 34)
         }
+    }
+
+    private var card: some View {
+        VStack(spacing: 18) {
+            Text(steps[step].0)
+                .font(HJTheme.display(22))
+                .foregroundColor(HJTheme.navy)
+            Text(steps[step].1)
+                .font(HJTheme.body(14))
+                .foregroundColor(HJTheme.navy.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 6) {
+                ForEach(0..<steps.count, id: \.self) { i in
+                    Circle()
+                        .fill(i == step ? HJTheme.navy : HJTheme.navy.opacity(0.25))
+                        .frame(width: 8, height: 8)
+                }
+            }
+            HStack(spacing: 12) {
+                Button(action: finish) {
+                    Text("Skip")
+                        .font(HJTheme.body(14, weight: .semibold))
+                        .foregroundColor(HJTheme.inkSoft)
+                }
+                Spacer()
+                Button(action: {
+                    if step < steps.count - 1 { step += 1 } else { finish() }
+                }) {
+                    Text(step < steps.count - 1 ? "Next" : "Set Sail")
+                        .font(HJTheme.body(15, weight: .bold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 24).padding(.vertical, 11)
+                        .background(Capsule().fill(HJTheme.navy))
+                }
+            }
+        }
+        .padding(24)
+        .background(RoundedRectangle(cornerRadius: 20).fill(HJTheme.cream))
+        .padding(.horizontal, 34)
     }
 
     private func finish() {
