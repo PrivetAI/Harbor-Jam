@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HJHarborView: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
 
     var body: some View {
         ZStack {
@@ -29,12 +30,28 @@ struct HJHarborView: View {
                     }
                     .padding(.top, 8)
 
-                    ForEach(HJCatalog.chapters, id: \.index) { chapter in
-                        chapterCard(chapter)
-                    }
+                    chapterList
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 110)
+                .hjColumn(HJLayout.harborColumn, hSize)
+            }
+        }
+    }
+
+    /// One column of full-width cards on iPhone (unchanged); two columns on a
+    /// wide iPad canvas, where a 900pt-wide chapter row would be mostly gap.
+    @ViewBuilder
+    private var chapterList: some View {
+        if HJLayout.wide(hSize) {
+            LazyVGrid(columns: HJLayout.twoColumns(spacing: 14), spacing: 14) {
+                ForEach(HJCatalog.chapters, id: \.index) { chapter in
+                    chapterCard(chapter)
+                }
+            }
+        } else {
+            ForEach(HJCatalog.chapters, id: \.index) { chapter in
+                chapterCard(chapter)
             }
         }
     }
@@ -102,6 +119,7 @@ struct HJHarborView: View {
 
 struct HJLevelGridView: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
     var chapter: HJChapterDef
 
     private let columns = [GridItem(.adaptive(minimum: 64), spacing: 10)]
@@ -126,6 +144,10 @@ struct HJLevelGridView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 110)
+                // The columns are already `.adaptive(minimum: 64)`, so widening
+                // the container is what adds columns: 688pt of content width
+                // fits 9 cells per row against the phone's 4.
+                .hjColumn(HJLayout.levelGridColumn, hSize)
             }
         }
         .navigationBarTitleDisplayMode(.inline)

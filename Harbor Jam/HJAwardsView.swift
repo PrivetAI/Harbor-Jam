@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HJAwardsView: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
 
     var body: some View {
         ZStack {
@@ -14,15 +15,32 @@ struct HJAwardsView: View {
                         .padding(.top, 12)
 
                     statsBlock
+                        // A label/value row 880pt wide reads as two unrelated
+                        // columns, so the log stays a narrow panel.
+                        .hjCap(HJLayout.panelColumn, hSize)
 
-                    VStack(spacing: 10) {
-                        ForEach(HJAchievements.all) { achievement in
-                            achievementRow(achievement)
-                        }
-                    }
+                    achievementList
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 110)
+                .hjColumn(HJLayout.awardsColumn, hSize)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var achievementList: some View {
+        if HJLayout.wide(hSize) {
+            LazyVGrid(columns: HJLayout.twoColumns(spacing: 10), spacing: 10) {
+                ForEach(HJAchievements.all) { achievement in
+                    achievementRow(achievement)
+                }
+            }
+        } else {
+            VStack(spacing: 10) {
+                ForEach(HJAchievements.all) { achievement in
+                    achievementRow(achievement)
+                }
             }
         }
     }

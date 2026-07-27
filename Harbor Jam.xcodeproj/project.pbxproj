@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0202D9932DE6F233E391BC8E /* HarborJamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09216A650447FE6B08DEE37B /* HarborJamApp.swift */; };
+		C0DEAD0000000000000002 /* HJAdaptive.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEAD0000000000000001 /* HJAdaptive.swift */; };
 		03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* HJTheme.swift */; };
 		05A74D6449BB2492844769E8 /* HJModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0500D6B061589BA599DADCD /* HJModels.swift */; };
 		0943364D376D3F1FE86C8C61 /* HJSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103E9862DA27096EC4D1AEA /* HJSave.swift */; };
@@ -27,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C0DEAD0000000000000001 /* HJAdaptive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJAdaptive.swift; sourceTree = "<group>"; };
 		00B51920B8D01771FBEC31AF /* HJGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJGameViewModel.swift; sourceTree = "<group>"; };
 		06DD81753C5E36E0C7F4F1EA /* HJDailyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJDailyView.swift; sourceTree = "<group>"; };
 		09216A650447FE6B08DEE37B /* HarborJamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamApp.swift; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 				09216A650447FE6B08DEE37B /* HarborJamApp.swift */,
 				E32480F6F9A77D3C7696964C /* HarborJamLoadingScreen.swift */,
 				8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */,
+				C0DEAD0000000000000001 /* HJAdaptive.swift */,
 				240BCDE9D72B6C1A064C6B4E /* HJAwardsView.swift */,
 				1E7C2EBDCC24F1B273A36CEF /* HJBoardView.swift */,
 				06DD81753C5E36E0C7F4F1EA /* HJDailyView.swift */,
@@ -161,6 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C0DEAD0000000000000002 /* HJAdaptive.swift in Sources */,
 				DEFDC4934A20DC76712A9AFD /* HJAwardsView.swift in Sources */,
 				8B75CA9004D84FBEADD3D8AA /* HJBoardView.swift in Sources */,
 				AA2C5FCBFD0B9476371F0352 /* HJDailyView.swift in Sources */,
@@ -206,7 +210,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -350,7 +354,7 @@
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HJRootView: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
     @State private var selectedTab = 0
 
     var body: some View {
@@ -54,6 +55,10 @@ struct HJRootView: View {
                     .frame(width: 22, height: 22))
             }
         }
+        // iPad: four tabs spread across 1024pt would strand each label in its
+        // own quadrant. Cap the button row and re-centre it — the cap is applied
+        // BEFORE the padding/background so the white bar still spans full width.
+        .hjColumn(HJLayout.tabBarColumn, hSize)
         .padding(.top, 10)
         .padding(.bottom, 6)
         .background(

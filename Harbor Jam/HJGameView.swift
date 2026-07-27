@@ -3,6 +3,7 @@ import SwiftUI
 struct HJGameView: View {
     @EnvironmentObject var store: HJStore
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.horizontalSizeClass) private var hSize
     @StateObject private var vm: HJGameViewModel
     var title: String
     var onNext: (() -> HJGameMode?)?
@@ -26,14 +27,22 @@ struct HJGameView: View {
             let compact = geo.size.height < 620
             // The board must subtract EVERY inset it sits inside: the VStack's own
             // horizontal padding, and vertically the chrome plus the floating tab bar.
+            // On a wide iPad canvas the width is additionally capped so the marina
+            // does not run edge to edge — see HJLayout.boardColumn. On iPhone
+            // `min` never bites (the widest phone gives 440 - 24 = 416 < 920).
+            let boardWidth = HJLayout.wide(hSize)
+                ? min(geo.size.width - 24, HJLayout.boardColumn)
+                : geo.size.width - 24
             let boardAvailable = CGSize(
-                width: geo.size.width - 24,
+                width: boardWidth,
                 height: geo.size.height - (compact ? 170 : 210) - tabBarInset)
             ZStack {
                 HJTheme.cream.ignoresSafeArea()
                 VStack(spacing: compact ? 6 : 12) {
                     header
+                        .hjColumn(HJLayout.gameChromeColumn, hSize)
                     hudRow
+                        .hjColumn(HJLayout.gameChromeColumn, hSize)
                     HJBoardView(vm: vm, store: store, available: boardAvailable)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     controls
@@ -172,6 +181,9 @@ struct HJGameView: View {
             GeometryReader { geo in
                 ScrollView(showsIndicators: false) {
                     winCard
+                        // iPad only: keep the card a card instead of a
+                        // 1024pt-wide banner. The scroll wrapper above stays.
+                        .hjCap(HJLayout.overlayColumn, hSize)
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: geo.size.height)
                 }
@@ -240,6 +252,7 @@ struct HJGameView: View {
 
 struct HJOnboardingOverlay: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
     @State private var step = 0
 
     private let steps: [(String, String)] = [
@@ -256,6 +269,8 @@ struct HJOnboardingOverlay: View {
             GeometryReader { geo in
                 ScrollView(showsIndicators: false) {
                     card
+                        // iPad only; the landscape scroll wrapper is untouched.
+                        .hjCap(HJLayout.overlayColumn, hSize)
                         .frame(maxWidth: .infinity)
                         .frame(minHeight: geo.size.height)
                 }

@@ -6,6 +6,7 @@ struct HJBoardView: View {
     @ObservedObject var vm: HJGameViewModel
     var store: HJStore
     var available: CGSize
+    @Environment(\.horizontalSizeClass) private var hSize
 
     private var gridW: Int { vm.state.gridW }
     private var gridH: Int { vm.state.gridH }
@@ -14,10 +15,34 @@ struct HJBoardView: View {
         let padding: CGFloat = 12
         let w = max(50, available.width - padding * 2)
         let h = max(50, available.height - padding * 2)
-        return min(w / CGFloat(gridW), h / CGFloat(gridH))
+        let fit = min(w / CGFloat(gridW), h / CGFloat(gridH))
+        // The cap only exists so a 6x6 harbour on a 12.9" iPad does not draw
+        // 149pt cells. It is never consulted on iPhone / compact width, where
+        // the largest cell this app can produce is 65pt.
+        return HJLayout.wide(hSize) ? min(fit, HJLayout.maxCell) : fit
     }
     private var boardSize: CGSize {
         CGSize(width: cellSize * CGFloat(gridW), height: cellSize * CGFloat(gridH))
+    }
+
+    /// How much heavier every hairline in the marina art has to be drawn so it
+    /// keeps the weight it was tuned for on a ~350-390pt phone board.
+    ///
+    /// Hull outlines, bow arrows, current-lane arrows, sandbar wave marks and —
+    /// most importantly — the colorblind hull patterns are all specified in
+    /// fixed points. Left alone at an 896pt board they would render at roughly
+    /// 45% of their phone weight and the accessibility patterns would go from a
+    /// readable 3-4 stripes per hull to 9 near-invisible ones.
+    ///
+    /// Two independent guarantees that this is exactly 1.0 on iPhone:
+    ///   * the `wide()` gate returns early on anything that is not a wide iPad;
+    ///   * even without it, the widest board an iPhone can produce is
+    ///     440 - 24 - 24 = 392pt (16/17 Pro Max, portrait; the board is always
+    ///     width-bound there), and 392 / 420 < 1 so `max(1, ...)` pins it to 1.
+    /// Note `boardSize` does not depend on `artScale`, so there is no cycle.
+    private var artScale: CGFloat {
+        guard HJLayout.wide(hSize) else { return 1 }
+        return min(max(boardSize.width / HJLayout.artReference, 1), HJLayout.maxArtScale)
     }
 
     private var waterColor: Color { vm.state.night ? HJTheme.nightWater : HJTheme.seafoam }
@@ -49,14 +74,14 @@ struct HJBoardView: View {
                     p.move(to: CGPoint(x: CGFloat(x) * cellSize, y: 0))
                     p.addLine(to: CGPoint(x: CGFloat(x) * cellSize, y: boardSize.height))
                 }
-                .stroke(Color.white.opacity(vm.state.night ? 0.06 : 0.25), lineWidth: 1)
+                .stroke(Color.white.opacity(vm.state.night ? 0.06 : 0.25), lineWidth: 1 * artScale)
             }
             ForEach(0..<gridH, id: \.self) { y in
                 Path { p in
                     p.move(to: CGPoint(x: 0, y: CGFloat(y) * cellSize))
                     p.addLine(to: CGPoint(x: boardSize.width, y: CGFloat(y) * cellSize))
                 }
-                .stroke(Color.white.opacity(vm.state.night ? 0.06 : 0.25), lineWidth: 1)
+                .stroke(Color.white.opacity(vm.state.night ? 0.06 : 0.25), lineWidth: 1 * artScale)
             }
         }
         .frame(width: boardSize.width, height: boardSize.height)
@@ -68,14 +93,14 @@ struct HJBoardView: View {
                 if lane.isRow {
                     ForEach(0..<gridW, id: \.self) { x in
                         HJArrowShape(direction: lane.push)
-                            .stroke(HJTheme.navy.opacity(0.22), lineWidth: 1.6)
+                            .stroke(HJTheme.navy.opacity(0.22), lineWidth: 1.6 * artScale)
                             .frame(width: cellSize * 0.6, height: cellSize * 0.6)
                             .position(cellCenter(x: x, y: lane.index))
                     }
                 } else {
                     ForEach(0..<gridH, id: \.self) { y in
                         HJArrowShape(direction: lane.push)
-                            .stroke(HJTheme.navy.opacity(0.22), lineWidth: 1.6)
+                            .stroke(HJTheme.navy.opacity(0.22), lineWidth: 1.6 * artScale)
                             .frame(width: cellSize * 0.6, height: cellSize * 0.6)
                             .position(cellCenter(x: lane.index, y: y))
                     }
@@ -94,7 +119,7 @@ struct HJBoardView: View {
                         .fill(Color(red: 0.90, green: 0.82, blue: 0.62).opacity(solid ? 0.95 : 0.35))
                     if solid {
                         HJWaveShape()
-                            .stroke(HJTheme.driftwood.opacity(0.8), lineWidth: 1.4)
+                            .stroke(HJTheme.driftwood.opacity(0.8), lineWidth: 1.4 * artScale)
                             .frame(width: cellSize * 0.55, height: cellSize * 0.3)
                     }
                 }
@@ -136,7 +161,8 @@ struct HJBoardView: View {
                            anchored: vm.state.isAnchored(boat),
                            shaking: vm.shakeBoatID == boat.id,
                            patterns: store.save.colorblindPatterns,
-                           night: vm.state.night)
+                           night: vm.state.night,
+                           artScale: artScale)
                     .position(boatCenter(boat))
                     .onTapGesture { vm.tapBoat(boat.id, store: store) }
                     .animation(.easeOut(duration: 0.22), value: boat.x)
@@ -163,6 +189,8 @@ struct HJBoatView: View {
     var shaking: Bool
     var patterns: Bool
     var night: Bool
+    /// 1 on iPhone / compact width — see `HJBoardView.artScale`.
+    var artScale: CGFloat = 1
 
     private var hull: Color { HJTheme.hullColors[boat.hullIndex % HJTheme.hullColors.count] }
     private var w: CGFloat { CGFloat(boat.width) * cellSize * 0.92 }
@@ -173,14 +201,14 @@ struct HJBoatView: View {
             HJHullShape(bow: boat.bow, isBarge: boat.isBarge)
                 .fill(hull)
             HJHullShape(bow: boat.bow, isBarge: boat.isBarge)
-                .stroke(Color.black.opacity(0.25), lineWidth: 1.5)
+                .stroke(Color.black.opacity(0.25), lineWidth: 1.5 * artScale)
             if patterns {
-                HJPatternOverlay(index: boat.hullIndex)
+                HJPatternOverlay(index: boat.hullIndex, artScale: artScale)
                     .clipShape(HJHullShape(bow: boat.bow, isBarge: boat.isBarge))
             }
             // deck stripe pointing at the bow
             HJArrowShape(direction: boat.bow)
-                .stroke(Color.white.opacity(0.85), lineWidth: 2)
+                .stroke(Color.white.opacity(0.85), lineWidth: 2 * artScale)
                 .frame(width: min(w, h) * 0.5, height: min(w, h) * 0.5)
             if anchored {
                 Circle()
@@ -188,14 +216,16 @@ struct HJBoatView: View {
                     .frame(width: cellSize * 0.3, height: cellSize * 0.3)
                     .overlay(
                         HJLockShape()
-                            .stroke(Color.white, lineWidth: 1.4)
+                            .stroke(Color.white, lineWidth: 1.4 * artScale)
                             .frame(width: cellSize * 0.18, height: cellSize * 0.18)
                     )
                     .offset(x: w * 0.28, y: -h * 0.28)
             }
         }
         .frame(width: w, height: h)
-        .offset(x: shaking ? 4 : 0)
+        // The "blocked" shake is the only feedback for an illegal tap; 4pt of
+        // travel is invisible against a 900pt board, so it scales too.
+        .offset(x: shaking ? 4 * artScale : 0)
         .animation(shaking ? .easeInOut(duration: 0.08).repeatCount(4, autoreverses: true) : .default, value: shaking)
         .opacity(anchored ? 0.82 : 1)
     }
@@ -251,9 +281,18 @@ struct HJHullShape: Shape {
 
 struct HJPatternOverlay: View {
     var index: Int
+    /// 1 on iPhone / compact width — see `HJBoardView.artScale`.
+    ///
+    /// Both the stroke weight AND the repeat pitch scale. Scaling only the
+    /// stroke would leave a 2.1x iPad hull carrying ~9 stripes where the phone
+    /// shows ~3, which reads as a flat wash rather than a distinguishable
+    /// pattern — i.e. it would defeat the colorblind setting a different way.
+    var artScale: CGFloat = 1
+
     var body: some View {
         GeometryReader { geo in
             let w = geo.size.width, h = geo.size.height
+            let s = artScale
             switch index % 4 {
             case 0:
                 Path { p in
@@ -261,33 +300,33 @@ struct HJPatternOverlay: View {
                     while x < w + h {
                         p.move(to: CGPoint(x: x, y: 0))
                         p.addLine(to: CGPoint(x: x + h, y: h))
-                        x += 10
+                        x += 10 * s
                     }
                 }
-                .stroke(Color.white.opacity(0.35), lineWidth: 2)
+                .stroke(Color.white.opacity(0.35), lineWidth: 2 * s)
             case 1:
                 Path { p in
-                    var y: CGFloat = 4
+                    var y: CGFloat = 4 * s
                     while y < h {
-                        var x: CGFloat = 4
+                        var x: CGFloat = 4 * s
                         while x < w {
-                            p.addEllipse(in: CGRect(x: x, y: y, width: 3, height: 3))
-                            x += 9
+                            p.addEllipse(in: CGRect(x: x, y: y, width: 3 * s, height: 3 * s))
+                            x += 9 * s
                         }
-                        y += 9
+                        y += 9 * s
                     }
                 }
                 .fill(Color.white.opacity(0.4))
             case 2:
                 Path { p in
-                    var y: CGFloat = 3
+                    var y: CGFloat = 3 * s
                     while y < h {
                         p.move(to: CGPoint(x: 0, y: y))
                         p.addLine(to: CGPoint(x: w, y: y))
-                        y += 8
+                        y += 8 * s
                     }
                 }
-                .stroke(Color.white.opacity(0.3), lineWidth: 1.6)
+                .stroke(Color.white.opacity(0.3), lineWidth: 1.6 * s)
             default:
                 // 8 hull colors fold onto this 4-way switch, so every branch has to draw
                 // something — an empty one leaves two hull colors unmarked and silently
@@ -297,10 +336,10 @@ struct HJPatternOverlay: View {
                     while x < w + h {
                         p.move(to: CGPoint(x: x, y: h))
                         p.addLine(to: CGPoint(x: x + h, y: 0))
-                        x += 10
+                        x += 10 * s
                     }
                 }
-                .stroke(Color.white.opacity(0.35), lineWidth: 2)
+                .stroke(Color.white.opacity(0.35), lineWidth: 2 * s)
             }
         }
     }

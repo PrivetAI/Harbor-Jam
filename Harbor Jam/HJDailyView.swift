@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HJDailyView: View {
     @EnvironmentObject var store: HJStore
+    @Environment(\.horizontalSizeClass) private var hSize
 
     private var todayKey: Int { HJStore.todayKey() }
     private var doneToday: Bool { store.save.bestDailyTaps[String(todayKey)] != nil }
@@ -75,6 +76,9 @@ struct HJDailyView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 110)
+                // One hero card and two stat tiles — this page wants to stay
+                // narrow and centred, not stretch to 1024pt.
+                .hjColumn(HJLayout.dailyColumn, hSize)
             }
         }
     }
