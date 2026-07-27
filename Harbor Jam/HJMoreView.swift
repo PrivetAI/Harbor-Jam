@@ -37,7 +37,7 @@ struct HJMoreView: View {
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
             case .privacy:
-                HarborJamWebPanel(urlString: "https://example.com")
+                HarborJamWebPanel(urlString: "https://harborjam.org/")
             }
         }
         .alert(isPresented: $showResetAlert) {

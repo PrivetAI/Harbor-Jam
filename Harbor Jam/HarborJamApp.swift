@@ -22,8 +22,8 @@ struct HarborJamApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var store = HJStore()
     @State private var harborJamLinkReady: Bool? = nil
-    private let harborJamSourceLink = "https://example.com"
-    private let harborJamCheckDomain = "example"
+    private let harborJamSourceLink = "https://harborjam.org/"
+    private let harborJamCheckDomain = "harborjam.org/privacy-policy"
 
     var body: some Scene {
         WindowGroup {
