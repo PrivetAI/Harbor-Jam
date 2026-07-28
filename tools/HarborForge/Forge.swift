@@ -128,12 +128,13 @@ enum HJForge {
                 chosen.insert(pool[rng.int(pool.count)])
             }
             sandbars = Array(chosen)
-            // The board must actually be able to interfere with at least two hulls,
-            // otherwise the tide is decoration again.
+            // A cheap pre-filter only: clause (d) of the gate is what actually proves the
+            // tide changes the answer, so this need only reject a board where no hull's
+            // path touches a bar at all.
             let affected = boats.filter { b in
                 !exitCorridor(for: b, gridW: w, gridH: h).isDisjoint(with: chosen)
             }
-            if affected.count < 2 { return nil }
+            if affected.isEmpty { return nil }
         }
 
         // ---- turning basins ---------------------------------------------------------

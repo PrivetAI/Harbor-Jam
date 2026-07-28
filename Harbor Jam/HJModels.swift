@@ -129,31 +129,31 @@ enum HJCatalog {
         case 0:
             return HJLevelConfig(gridW: 6, gridH: 6, boatCount: ramp(3, 6), bargeCount: 0,
                                  useCurrents: false, useTide: false, useFerry: false,
-                                 chainCount: 0, basinCount: 0, night: false)
+                                 chainCount: 0, basinCount: 1, night: false)
         case 1:
             return HJLevelConfig(gridW: 6, gridH: 7, boatCount: ramp(4, 7), bargeCount: level >= 12 ? 1 : 0,
                                  useCurrents: true, useTide: false, useFerry: false,
-                                 chainCount: 0, basinCount: 0, night: false)
+                                 chainCount: 0, basinCount: 1, night: false)
         case 2:
             return HJLevelConfig(gridW: 7, gridH: 7, boatCount: ramp(5, 8), bargeCount: level >= 10 ? 1 : 0,
                                  useCurrents: false, useTide: false, useFerry: true,
-                                 chainCount: 0, basinCount: 1, night: false)
+                                 chainCount: 0, basinCount: 2, night: false)
         case 3:
             return HJLevelConfig(gridW: 7, gridH: 8, boatCount: ramp(5, 8), bargeCount: 1,
                                  useCurrents: false, useTide: true, useFerry: false,
-                                 chainCount: 0, basinCount: ramp(1, 2), night: false)
+                                 chainCount: 0, basinCount: ramp(2, 3), night: false)
         case 4:
             return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(6, 9), bargeCount: 1,
                                  useCurrents: true, useTide: true, useFerry: false,
-                                 chainCount: level >= 6 ? 2 : 1, basinCount: ramp(1, 2), night: false)
+                                 chainCount: level >= 6 ? 2 : 1, basinCount: ramp(2, 3), night: false)
         case 5:
             return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(7, 10), bargeCount: 1,
                                  useCurrents: true, useTide: false, useFerry: true,
-                                 chainCount: 1, basinCount: 2, night: true)
+                                 chainCount: 1, basinCount: 3, night: true)
         default:
             return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(8, 10), bargeCount: 2,
                                  useCurrents: true, useTide: true, useFerry: true,
-                                 chainCount: 2, basinCount: ramp(2, 3), night: false)
+                                 chainCount: 2, basinCount: ramp(3, 4), night: false)
         }
     }
 
