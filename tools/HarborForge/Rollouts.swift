@@ -89,21 +89,42 @@ func forgeRolloutA(start: HJBoardState, rng: inout ForgeRNG) -> ForgeRollout {
     return ForgeRollout(cleared: state.isCleared, moves: state.taps, deadlocked: false)
 }
 
+/// How many consecutive wait moves count as stuck. The tide flips every 3 taps and the
+/// ferry laps a board in at most `gridW` advances, so a dozen waits is comfortably past
+/// the point where a moving world would have opened something up.
+private let forgeWaitPatience = 12
+
 /// POLICY B — a careless human with no undo. Commits ANY state-changing tap, preferring
-/// an exit when one is offered. Reports a deadlock when the board is not cleared and
-/// neither an exit nor an advance is available: nothing the player can press does
-/// anything, and only undo or restart gets them out.
+/// an exit when one is offered.
+///
+/// When no boat can exit or advance, the player is not necessarily stuck: a refused tap
+/// still spends a tick, which advances the ferry and turns the tide, so waiting is a real
+/// move. The policy therefore waits rather than giving up, and reports a dead end only
+/// when `forgeWaitPatience` consecutive waits fail to open anything — that is the state
+/// where nothing the player can press will ever help and only undo or restart gets them
+/// out.
 func forgeRolloutB(start: HJBoardState, rng: inout ForgeRNG) -> ForgeRollout {
     var state = start
     var steps = 0
+    var consecutiveWaits = 0
+
     while !state.isCleared && steps < forgeStepCap {
         steps += 1
         let opts = forgeOptions(state)
         if !opts.exits.isEmpty {
+            consecutiveWaits = 0
             _ = HJEngine.tap(boatID: opts.exits[rng.int(opts.exits.count)], state: &state)
         } else if !opts.advances.isEmpty {
+            consecutiveWaits = 0
             _ = HJEngine.tap(boatID: opts.advances[rng.int(opts.advances.count)], state: &state)
+        } else if let waitOn = opts.noops.first {
+            consecutiveWaits += 1
+            if consecutiveWaits > forgeWaitPatience {
+                return ForgeRollout(cleared: false, moves: state.taps, deadlocked: true)
+            }
+            _ = HJEngine.tap(boatID: waitOn, state: &state)
         } else {
+            // No boats at all and the board is not cleared — impossible, but not silently.
             return ForgeRollout(cleared: false, moves: state.taps, deadlocked: true)
         }
     }

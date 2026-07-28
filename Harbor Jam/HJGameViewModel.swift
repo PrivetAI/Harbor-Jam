@@ -78,6 +78,9 @@ final class HJGameViewModel: ObservableObject {
             haptic(.light)
             playSound(1104)
         case .blocked, .anchored:
+            // A refused tap still spends a tick, so the board changed and the state
+            // belongs on the undo stack like any other move.
+            undoStack.append(before)
             shake(id)
             haptic(.heavy)
         case .invalid:

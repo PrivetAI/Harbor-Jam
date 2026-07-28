@@ -56,12 +56,21 @@ struct HJBoardState: Codable, Equatable {
     }
 }
 
+/// Why a boat refused to move. The board draws each of these differently — collapsing
+/// them into one shake is what made the harbor feel arbitrary.
+enum HJBlockReason: Int, Codable, Equatable {
+    case hull       // another boat is in the way
+    case sandbar    // the tide is out and a bar is exposed
+    case ferry      // the ferry occupies the next cell
+    case edge       // the harbour wall, on a side the bow does not face
+}
+
 enum HJTapOutcome: Equatable {
     case exited(boatID: Int)
     case moved(boatID: Int, distance: Int)
-    case blocked          // boat could not move at all (shake, no move cost)
-    case anchored         // locked by buoy chain
-    case invalid
+    case blocked(reason: HJBlockReason)   // boat could not move at all — still costs a tick
+    case anchored                          // locked by buoy chain — still costs a tick
+    case invalid                           // no such boat; nothing happens, nothing ticks
 }
 
 enum HJEngine {
@@ -69,7 +78,10 @@ enum HJEngine {
     /// Resolve tapping a boat. Mutates `state` in place. Fully deterministic.
     static func tap(boatID: Int, state: inout HJBoardState) -> HJTapOutcome {
         guard let boat = state.boat(withID: boatID) else { return .invalid }
-        if state.isAnchored(boat) { return .anchored }
+        if state.isAnchored(boat) {
+            tickWorld(&state)
+            return .anchored
+        }
 
         let solids = state.solidCells(excluding: boatID)
         let dx = boat.bow.dx, dy = boat.bow.dy
@@ -108,25 +120,35 @@ enum HJEngine {
             if steps > state.gridW + state.gridH + 4 { break } // safety bound
         }
 
-        if steps == 0 { return .blocked }
+        if steps == 0 {
+            let reason = blockReason(boat: boat, state: state, solids: solids)
+            tickWorld(&state)
+            return .blocked(reason: reason)
+        }
 
         if exited {
             state.boats.removeAll { $0.id == boatID }
             state.exitedIDs.append(boatID)
-            afterMove(&state, movedBoatID: nil)
+            tickWorld(&state)
             return .exited(boatID: boatID)
         } else {
             if let idx = state.boats.firstIndex(where: { $0.id == boatID }) {
                 state.boats[idx].x = cx
                 state.boats[idx].y = cy
             }
-            afterMove(&state, movedBoatID: boatID)
+            tickWorld(&state)
+            applyCurrent(&state, boatID: boatID)
             return .moved(boatID: boatID, distance: steps)
         }
     }
 
-    /// Post-move world updates: tap counter, tide toggle, ferry advance, current push.
-    private static func afterMove(_ state: inout HJBoardState, movedBoatID: Int?) {
+    /// World updates that run on EVERY tap the player spends, including one that moved
+    /// nothing. Before this existed the ferry only advanced when some boat successfully
+    /// sailed, so a board whose remaining boats were all blocked by the ferry could never
+    /// change again — 21 of the 140 levels were reachable into exactly that dead end.
+    /// It also removes free probing: tapping every hull to read the answer off the engine
+    /// now costs the same as playing.
+    static func tickWorld(_ state: inout HJBoardState) {
         state.taps += 1
         if state.tideEnabled && state.taps % 3 == 0 {
             state.tideHigh.toggle()
@@ -134,9 +156,26 @@ enum HJEngine {
             // because sandbar cells are excluded from all placements and rest positions.
         }
         advanceFerry(&state)
-        if let id = movedBoatID {
-            applyCurrent(&state, boatID: id)
+    }
+
+    /// Classify why `boat` could not advance a single cell, by re-probing that first step.
+    /// Hull before ferry before sandbar, because a cell can belong to more than one of
+    /// them and the nearest physical explanation is the one worth telling the player.
+    static func blockReason(boat: HJBoat, state: HJBoardState, solids: Set<HJCell>) -> HJBlockReason {
+        var candidate = boat
+        candidate.x += boat.bow.dx
+        candidate.y += boat.bow.dy
+        let cells = candidate.cells
+
+        let offending = cells.filter { state.inBounds($0) && solids.contains($0) }
+        if !offending.isEmpty {
+            let hulls = state.occupied(excluding: boat.id)
+            if offending.contains(where: { hulls.contains($0) }) { return .hull }
+            let ferry = state.ferryCells()
+            if offending.contains(where: { ferry.contains($0) }) { return .ferry }
+            return .sandbar
         }
+        return .edge
     }
 
     private static func advanceFerry(_ state: inout HJBoardState) {

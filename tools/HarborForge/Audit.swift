@@ -95,11 +95,14 @@ func forgeRunAudit() -> Int {
     }
 
     print("")
-    print("--- baseline assertions ---")
+    print("--- assertions ---")
     expect(gen.count == HJCatalog.totalLevels, "all \(HJCatalog.totalLevels) levels generate")
-    expect(parEqBoats == gen.count, "par equals boat count on every level")
-    expect(greedyRate >= 90.0, "zero-thought policy three-stars at least 90 % of runs")
-    expect(deadLevels.count >= 20, "at least 20 levels reachable into a dead end")
+    expect(openingNoops == 0, "no tap is free — every tap ticks the world")
+    expect(deadLevels.count <= 1, "at most 1 level reachable into a dead end (0 required at ship)")
+    // Still true of the game as it stands, and the number the redesign exists to destroy:
+    // the ship gate replaces this with `greedyRate < 15`.
+    expect(greedyRate >= 90.0, "zero-thought policy still three-stars at least 90 % of runs")
+    expect(parEqBoats == gen.count, "par still equals boat count on every level")
 
     if failures.isEmpty {
         print("")
