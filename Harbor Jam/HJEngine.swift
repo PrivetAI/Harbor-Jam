@@ -73,7 +73,121 @@ enum HJTapOutcome: Equatable {
     case invalid                           // no such boat; nothing happens, nothing ticks
 }
 
+/// Where a tap would put a boat, computed once and used by both the move and the ghost
+/// the player sees on a long press. A preview that disagrees with the move is the classic
+/// "the game lied to me" bug, so there is exactly one walk and both callers share it.
+struct HJMovePreview: Equatable {
+    var landing: [HJCell]           // cells the hull would occupy; empty when it exits
+    var exits: Bool
+    var distance: Int
+    var stopReason: HJBlockReason?  // nil when it simply ran out of throttle or came about
+    var bowAfter: HJDirection       // differs from the bow only after a turning basin
+    var enteredBasin: Bool
+}
+
 enum HJEngine {
+
+    /// The leading cells of a hull — the ones that meet whatever is ahead of it.
+    static func bowCells(of boat: HJBoat) -> [HJCell] {
+        let cells = boat.cells
+        switch boat.bow {
+        case .east:  return cells.filter { $0.x == boat.x + boat.width - 1 }
+        case .west:  return cells.filter { $0.x == boat.x }
+        case .south: return cells.filter { $0.y == boat.y + boat.height - 1 }
+        case .north: return cells.filter { $0.y == boat.y }
+        }
+    }
+
+    /// The single walk. Advances at most `boat.throttle` cells, stopping early on an
+    /// obstacle, on leaving the board, or on nosing into a turning basin — which also
+    /// turns the hull about. Everything else in this engine is a thin wrapper on it.
+    private static func marchDetail(boat: HJBoat, state: HJBoardState)
+        -> (boat: HJBoat, distance: Int, exits: Bool, stopReason: HJBlockReason?, enteredBasin: Bool) {
+
+        let solids = state.solidCells(excluding: boat.id)
+        let basins = Set(state.basins)
+        var current = boat
+        var steps = 0
+
+        while steps < boat.throttle {
+            var candidate = current
+            candidate.x += boat.bow.dx
+            candidate.y += boat.bow.dy
+            let cells = candidate.cells
+            let inside = cells.filter { state.inBounds($0) }
+
+            if inside.contains(where: { solids.contains($0) }) {
+                let reason = steps == 0 ? blockReason(boat: current, state: state, solids: solids) : nil
+                return (current, steps, false, reason, false)
+            }
+            let outside = cells.filter { !state.inBounds($0) }
+            if !outside.isEmpty {
+                let legal = outside.allSatisfy { c in
+                    switch boat.bow {
+                    case .east:  return c.x >= state.gridW
+                    case .west:  return c.x < 0
+                    case .south: return c.y >= state.gridH
+                    case .north: return c.y < 0
+                    }
+                }
+                if !legal {
+                    let reason = steps == 0 ? HJBlockReason.edge : nil
+                    return (current, steps, false, reason, false)
+                }
+            }
+
+            current = candidate
+            steps += 1
+            if inside.isEmpty { return (current, steps, true, nil, false) }
+
+            // A basin catches the hull the moment its bow enters, and turns it about.
+            if !basins.isEmpty && bowCells(of: current).contains(where: { basins.contains($0) }) {
+                current.bow = boat.bow.opposite
+                return (current, steps, false, nil, true)
+            }
+        }
+        return (current, steps, false, nil, false)
+    }
+
+    /// Where a tap would land this boat, without touching the board.
+    static func march(boat: HJBoat, state: HJBoardState) -> HJMovePreview {
+        let r = marchDetail(boat: boat, state: state)
+        return HJMovePreview(landing: r.exits ? [] : r.boat.cells,
+                             exits: r.exits,
+                             distance: r.distance,
+                             stopReason: r.stopReason,
+                             bowAfter: r.boat.bow,
+                             enteredBasin: r.enteredBasin)
+    }
+
+    /// Where this boat will actually be once the tap is resolved AND the world has ticked.
+    ///
+    /// This runs the real tap on a copy rather than reporting the march landing, because
+    /// the tick that follows a move can drift the very boat that just moved: a hull set
+    /// down in a current lane is pushed a cell before the player's finger leaves the
+    /// glass. A ghost drawn at the march landing would be wrong in exactly the cases the
+    /// lane exists to teach. `distance`, `stopReason` and `enteredBasin` still describe
+    /// the tap itself, so the board can say *why* the boat stops where it does.
+    static func preview(boatID: Int, state: HJBoardState) -> HJMovePreview {
+        guard let boat = state.boat(withID: boatID) else {
+            return HJMovePreview(landing: [], exits: false, distance: 0,
+                                 stopReason: nil, bowAfter: .north, enteredBasin: false)
+        }
+        if state.isAnchored(boat) {
+            return HJMovePreview(landing: boat.cells, exits: false, distance: 0,
+                                 stopReason: nil, bowAfter: boat.bow, enteredBasin: false)
+        }
+        let walk = marchDetail(boat: boat, state: state)
+        var probe = state
+        _ = tap(boatID: boatID, state: &probe)
+        let settled = probe.boat(withID: boatID)
+        return HJMovePreview(landing: settled?.cells ?? [],
+                             exits: settled == nil,
+                             distance: walk.distance,
+                             stopReason: walk.stopReason,
+                             bowAfter: settled?.bow ?? walk.boat.bow,
+                             enteredBasin: walk.enteredBasin)
+    }
 
     /// Resolve tapping a boat. Mutates `state` in place. Fully deterministic.
     static func tap(boatID: Int, state: inout HJBoardState) -> HJTapOutcome {
@@ -83,79 +197,40 @@ enum HJEngine {
             return .anchored
         }
 
-        let solids = state.solidCells(excluding: boatID)
-        let dx = boat.bow.dx, dy = boat.bow.dy
+        let r = marchDetail(boat: boat, state: state)
 
-        // March forward one cell at a time until blocked or fully off the board.
-        var steps = 0
-        var exited = false
-        var cx = boat.x, cy = boat.y
-        while true {
-            let nx = cx + dx, ny = cy + dy
-            var candidate = boat
-            candidate.x = nx
-            candidate.y = ny
-            let cells = candidate.cells
-            let insideCells = cells.filter { state.inBounds($0) }
-            // blocked if any in-bounds cell of the candidate is solid
-            if insideCells.contains(where: { solids.contains($0) }) { break }
-            // If a cell left the board on a side that is NOT the bow direction, that's illegal;
-            // by construction straight movement only sheds cells past the bow-side edge.
-            let outCells = cells.filter { !state.inBounds($0) }
-            if !outCells.isEmpty {
-                // verify all out-of-bounds cells are beyond the bow-side edge
-                let legal = outCells.allSatisfy { c in
-                    switch boat.bow {
-                    case .east: return c.x >= state.gridW
-                    case .west: return c.x < 0
-                    case .south: return c.y >= state.gridH
-                    case .north: return c.y < 0
-                    }
-                }
-                if !legal { break }
-            }
-            cx = nx; cy = ny
-            steps += 1
-            if insideCells.isEmpty { exited = true; break }
-            if steps > state.gridW + state.gridH + 4 { break } // safety bound
-        }
-
-        if steps == 0 {
-            let reason = blockReason(boat: boat, state: state, solids: solids)
+        if r.distance == 0 {
+            let reason = r.stopReason ?? .edge
             tickWorld(&state)
             return .blocked(reason: reason)
         }
 
-        if exited {
+        if r.exits {
             state.boats.removeAll { $0.id == boatID }
             state.exitedIDs.append(boatID)
             tickWorld(&state)
             return .exited(boatID: boatID)
-        } else {
-            if let idx = state.boats.firstIndex(where: { $0.id == boatID }) {
-                state.boats[idx].x = cx
-                state.boats[idx].y = cy
-            }
-            tickWorld(&state)
-            applyCurrent(&state, boatID: boatID)
-            return .moved(boatID: boatID, distance: steps)
         }
+
+        if let idx = state.boats.firstIndex(where: { $0.id == boatID }) {
+            state.boats[idx] = r.boat
+        }
+        tickWorld(&state)
+        return .moved(boatID: boatID, distance: r.distance)
     }
 
     /// World updates that run on EVERY tap the player spends, including one that moved
     /// nothing. Before this existed the ferry only advanced when some boat successfully
     /// sailed, so a board whose remaining boats were all blocked by the ferry could never
-    /// change again — 21 of the 140 levels were reachable into exactly that dead end.
-    /// It also removes free probing: tapping every hull to read the answer off the engine
-    /// now costs the same as playing.
+    /// change again. It also removes free probing: tapping every hull to read the answer
+    /// off the engine now costs the same as playing.
     static func tickWorld(_ state: inout HJBoardState) {
         state.taps += 1
         if state.tideEnabled && state.taps % 3 == 0 {
             state.tideHigh.toggle()
-            // A tide drop never traps a boat mid-sandbar: boats and sandbars never overlap
-            // because sandbar cells are excluded from all placements and rest positions.
         }
         advanceFerry(&state)
+        applyCurrents(&state)
     }
 
     /// Classify why `boat` could not advance a single cell, by re-probing that first step.
@@ -176,6 +251,41 @@ enum HJEngine {
             return .sandbar
         }
         return .edge
+    }
+
+    /// Every non-barge hull sitting in a current lane drifts one cell, on every tick —
+    /// not only the boat the player just touched. This is what makes the harbor change
+    /// without the player's consent, and therefore what stops a reachable state from
+    /// always being at least as easy as the start.
+    ///
+    /// Lanes resolve far-side-first: the hull closest to the edge the current pushes
+    /// toward moves before the one behind it, so a queue in a lane shuffles along instead
+    /// of the leader blocking everyone.
+    static func applyCurrents(_ state: inout HJBoardState) {
+        guard !state.currents.isEmpty else { return }
+        for lane in state.currents {
+            let push = lane.effectivePush(atTick: state.taps)
+            let residents = state.boats.filter { boat in
+                !boat.isBarge && boat.cells.contains { lane.isRow ? $0.y == lane.index : $0.x == lane.index }
+            }
+            let ordered = residents.sorted { a, b in
+                switch push {
+                case .east:  return a.x > b.x
+                case .west:  return a.x < b.x
+                case .south: return a.y > b.y
+                case .north: return a.y < b.y
+                }
+            }
+            for boat in ordered {
+                guard let idx = state.boats.firstIndex(where: { $0.id == boat.id }) else { continue }
+                var moved = state.boats[idx]
+                moved.x += push.dx
+                moved.y += push.dy
+                let solids = state.solidCells(excluding: moved.id)
+                guard moved.cells.allSatisfy({ state.inBounds($0) && !solids.contains($0) }) else { continue }
+                state.boats[idx] = moved
+            }
+        }
     }
 
     private static func advanceFerry(_ state: inout HJBoardState) {
