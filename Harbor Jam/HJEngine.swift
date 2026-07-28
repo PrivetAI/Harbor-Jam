@@ -11,7 +11,7 @@ struct HJBoardState: Codable, Equatable {
     var ferry: HJFerry?
     var tideEnabled: Bool
     var tideHigh: Bool
-    var tugTokens: Int
+    var basins: [HJCell]      // enter one and the bow flips 180°
     var taps: Int
     var night: Bool
 
@@ -216,25 +216,4 @@ enum HJEngine {
         state.boats[idx] = moved
     }
 
-    /// Tug power-up: rotate a boat 90° clockwise in place around its top-left cell.
-    static func tugRotate(boatID: Int, state: inout HJBoardState) -> Bool {
-        guard state.tugTokens > 0,
-              let idx = state.boats.firstIndex(where: { $0.id == boatID }) else { return false }
-        let boat = state.boats[idx]
-        if state.isAnchored(boat) { return false }
-        var rotated = boat
-        rotated.bow = boat.bow.rotatedCW
-        if boat.isBarge {
-            // footprint unchanged, bow re-aims — always legal
-            state.boats[idx] = rotated
-            state.tugTokens -= 1
-            return true
-        }
-        let solids = state.solidCells(excluding: boatID)
-        let cells = rotated.cells
-        guard cells.allSatisfy({ state.inBounds($0) && !solids.contains($0) }) else { return false }
-        state.boats[idx] = rotated
-        state.tugTokens -= 1
-        return true
-    }
 }

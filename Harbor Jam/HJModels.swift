@@ -21,6 +21,12 @@ enum HJDirection: Int, Codable, CaseIterable {
     var rotatedCW: HJDirection {
         HJDirection(rawValue: (rawValue + 1) % 4) ?? .north
     }
+    /// A 180° turn. Unlike `rotatedCW` this preserves a hull's footprint — east↔west and
+    /// north↔south are both length-along-the-same-axis — which is why a turning basin
+    /// never needs a collision check.
+    var opposite: HJDirection {
+        HJDirection(rawValue: (rawValue + 2) % 4) ?? .north
+    }
     var isHorizontal: Bool { self == .east || self == .west }
 }
 
@@ -38,6 +44,10 @@ struct HJBoat: Codable, Identifiable, Equatable {
     var bow: HJDirection
     var hullIndex: Int      // color/pattern index
     var anchoredBy: Int?    // boat id that must exit before this one can move
+    /// Cells this hull advances per tap, printed on the deck as pips. This is the whole
+    /// puzzle: a boat that stops short lands on cells that were free a moment ago, so a
+    /// legal-looking tap can plug the only lane another boat needs.
+    var throttle: Int
 
     var width: Int { isBarge ? 2 : (bow.isHorizontal ? length : 1) }
     var height: Int { isBarge ? 2 : (bow.isHorizontal ? 1 : length) }
@@ -57,6 +67,14 @@ struct HJCurrentLane: Codable, Equatable {
     var isRow: Bool
     var index: Int              // row y or column x
     var push: HJDirection       // perpendicular push direction
+    var period: Int             // ticks before the push reverses; 0 means it never does
+
+    /// The push actually in force at `tick`. Reversing on a period stops a lane from
+    /// saturating against a wall, and makes the board change while the player watches.
+    func effectivePush(atTick tick: Int) -> HJDirection {
+        guard period > 0 else { return push }
+        return (tick / period) % 2 == 1 ? push.opposite : push
+    }
 }
 
 struct HJFerry: Codable, Equatable {
@@ -76,7 +94,7 @@ struct HJLevelConfig {
     var useTide: Bool
     var useFerry: Bool
     var chainCount: Int         // buoy anchor chains
-    var tugTokens: Int
+    var basinCount: Int         // turning-basin cells: enter one and the bow flips 180°
     var night: Bool
 }
 
@@ -100,38 +118,42 @@ enum HJCatalog {
     static let levelsPerChapter = 20
     static var totalLevels: Int { chapters.count * levelsPerChapter }
 
+    /// Boards cap at 8x8 and 10 boats. On a 393pt iPhone a 9x9 grid gives a 38pt cell and
+    /// a 35pt hull, under the 44pt touch target — and more boats simply means more
+    /// simultaneously-correct taps, which made the old game EASIER as it went on.
+    /// Difficulty now comes from throttle, basins and the acceptance gate, not object count.
     static func config(chapter: Int, level: Int) -> HJLevelConfig {
         let t = Double(level) / Double(levelsPerChapter - 1)   // 0..1 inside chapter
         func ramp(_ a: Int, _ b: Int) -> Int { a + Int((Double(b - a) * t).rounded()) }
         switch chapter {
         case 0:
-            return HJLevelConfig(gridW: 6, gridH: 6, boatCount: ramp(3, 7), bargeCount: 0,
+            return HJLevelConfig(gridW: 6, gridH: 6, boatCount: ramp(3, 6), bargeCount: 0,
                                  useCurrents: false, useTide: false, useFerry: false,
-                                 chainCount: 0, tugTokens: 0, night: false)
+                                 chainCount: 0, basinCount: 0, night: false)
         case 1:
-            return HJLevelConfig(gridW: 6, gridH: 7, boatCount: ramp(5, 9), bargeCount: level >= 12 ? 1 : 0,
+            return HJLevelConfig(gridW: 6, gridH: 7, boatCount: ramp(4, 7), bargeCount: level >= 12 ? 1 : 0,
                                  useCurrents: true, useTide: false, useFerry: false,
-                                 chainCount: 0, tugTokens: 0, night: false)
+                                 chainCount: 0, basinCount: 0, night: false)
         case 2:
-            return HJLevelConfig(gridW: 7, gridH: 7, boatCount: ramp(6, 10), bargeCount: level >= 10 ? 1 : 0,
+            return HJLevelConfig(gridW: 7, gridH: 7, boatCount: ramp(5, 8), bargeCount: level >= 10 ? 1 : 0,
                                  useCurrents: false, useTide: false, useFerry: true,
-                                 chainCount: 0, tugTokens: 0, night: false)
+                                 chainCount: 0, basinCount: 1, night: false)
         case 3:
-            return HJLevelConfig(gridW: 7, gridH: 8, boatCount: ramp(6, 10), bargeCount: 1,
+            return HJLevelConfig(gridW: 7, gridH: 8, boatCount: ramp(5, 8), bargeCount: 1,
                                  useCurrents: false, useTide: true, useFerry: false,
-                                 chainCount: 0, tugTokens: 0, night: false)
+                                 chainCount: 0, basinCount: ramp(1, 2), night: false)
         case 4:
-            return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(7, 11), bargeCount: 1,
+            return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(6, 9), bargeCount: 1,
                                  useCurrents: true, useTide: true, useFerry: false,
-                                 chainCount: level >= 6 ? 2 : 1, tugTokens: 1, night: false)
+                                 chainCount: level >= 6 ? 2 : 1, basinCount: ramp(1, 2), night: false)
         case 5:
-            return HJLevelConfig(gridW: 8, gridH: 9, boatCount: ramp(8, 12), bargeCount: 1,
+            return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(7, 10), bargeCount: 1,
                                  useCurrents: true, useTide: false, useFerry: true,
-                                 chainCount: 1, tugTokens: 1, night: true)
+                                 chainCount: 1, basinCount: 2, night: true)
         default:
-            return HJLevelConfig(gridW: 9, gridH: 9, boatCount: ramp(9, 14), bargeCount: 2,
+            return HJLevelConfig(gridW: 8, gridH: 8, boatCount: ramp(8, 10), bargeCount: 2,
                                  useCurrents: true, useTide: true, useFerry: true,
-                                 chainCount: 2, tugTokens: 1, night: false)
+                                 chainCount: 2, basinCount: ramp(2, 3), night: false)
         }
     }
 
@@ -146,5 +168,5 @@ enum HJCatalog {
 
     static let dailyConfig = HJLevelConfig(gridW: 7, gridH: 8, boatCount: 9, bargeCount: 1,
                                            useCurrents: true, useTide: true, useFerry: false,
-                                           chainCount: 1, tugTokens: 1, night: false)
+                                           chainCount: 1, basinCount: 2, night: false)
 }

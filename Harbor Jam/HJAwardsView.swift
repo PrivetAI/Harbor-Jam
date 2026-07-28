@@ -57,7 +57,6 @@ struct HJAwardsView: View {
             statRow("Boats exited", "\(store.save.stats.boatsExited)")
             statRow("Total moves", "\(store.save.stats.totalTaps)")
             statRow("Undos used", "\(store.save.stats.totalUndos)")
-            statRow("Tug rotations", "\(store.save.stats.tugsUsed)")
             statRow("Wins without undo", "\(store.save.stats.winsWithoutUndo)")
             statRow("Daily streak", "\(store.save.dailyStreak)")
             statRow("Stars collected", "\(store.totalStars())/420")

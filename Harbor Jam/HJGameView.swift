@@ -87,9 +87,6 @@ struct HJGameView: View {
             if vm.state.tideEnabled {
                 tideChip
             }
-            if vm.initialState.tugTokens > 0 {
-                tugChip
-            }
         }
     }
 
@@ -124,26 +121,6 @@ struct HJGameView: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 7)
         .background(RoundedRectangle(cornerRadius: 10).fill(HJTheme.cardBG))
-    }
-
-    private var tugChip: some View {
-        Button(action: { if vm.state.tugTokens > 0 { vm.tugArmed.toggle() } }) {
-            VStack(spacing: 2) {
-                Text("TUG ×\(vm.state.tugTokens)")
-                    .font(HJTheme.body(9, weight: .bold))
-                    .foregroundColor(vm.tugArmed ? .white : HJTheme.inkSoft)
-                HJTugShape()
-                    .stroke(vm.tugArmed ? Color.white : HJTheme.navy,
-                            style: StrokeStyle(lineWidth: 1.8, lineCap: .round))
-                    .frame(width: 16, height: 16)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 5)
-            .background(RoundedRectangle(cornerRadius: 10)
-                .fill(vm.tugArmed ? HJTheme.navy : HJTheme.cardBG))
-        }
-        .disabled(vm.state.tugTokens == 0)
-        .opacity(vm.state.tugTokens == 0 ? 0.45 : 1)
     }
 
     private var controls: some View {

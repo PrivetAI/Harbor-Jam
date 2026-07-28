@@ -178,8 +178,8 @@ struct HJMoreView: View {
                 .fill(HJTheme.buoyRed)
                 .frame(width: 18, height: 18))
         }
-        codexEntry(title: "The Tug",
-                   text: "Tug tokens rotate any free boat 90 degrees in place, when its new footprint fits. Scarce and precious — spend them wisely.") {
+        codexEntry(title: "Turning Basins",
+                   text: "A boat that noses into a turning basin stops there and comes about, bow reversed. It is the only way to send a hull back the way it came — park it clear of a lane now, come back for it later.") {
             AnyView(HJTugShape()
                 .stroke(HJTheme.navy, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 22, height: 22))

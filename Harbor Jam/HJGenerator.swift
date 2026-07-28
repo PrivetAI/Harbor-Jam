@@ -85,8 +85,12 @@ enum HJGenerator {
                 let isBarge = bargesLeft > 0 && rng.int(3) == 0
                 let length = isBarge ? 2 : (rng.int(3) == 0 ? 3 : 2)
                 guard let bow = rng.pick(HJDirection.allCases) else { break }
+                // Behaviour-preserving: a throttle this large always reaches the edge,
+                // so this legacy generator keeps producing the boards it always did.
+                // The forward generator in HarborForge is what draws real throttles.
                 var boat = HJBoat(id: exitIndex, x: 0, y: 0, length: length, isBarge: isBarge,
-                                  bow: bow, hullIndex: rng.int(8), anchoredBy: nil)
+                                  bow: bow, hullIndex: rng.int(8), anchoredBy: nil,
+                                  throttle: w + h + 4)
                 let maxX = w - boat.width, maxY = h - boat.height
                 guard maxX >= 0, maxY >= 0 else { continue }
                 boat.x = rng.int(maxX + 1)
@@ -152,7 +156,7 @@ enum HJGenerator {
                 if currents.contains(where: { $0.isRow == isRow && $0.index == index }) { continue }
                 let push: HJDirection = isRow ? (rng.bool() ? .north : .south)
                                               : (rng.bool() ? .east : .west)
-                currents.append(HJCurrentLane(isRow: isRow, index: index, push: push))
+                currents.append(HJCurrentLane(isRow: isRow, index: index, push: push, period: 0))
             }
         }
 
@@ -166,7 +170,7 @@ enum HJGenerator {
         let state = HJBoardState(gridW: w, gridH: h, boats: boats, exitedIDs: [],
                                  sandbars: sandbars, currents: currents, ferry: ferry,
                                  tideEnabled: config.useTide, tideHigh: true,
-                                 tugTokens: config.tugTokens, taps: 0, night: config.night)
+                                 basins: [], taps: 0, night: config.night)
         return HJGeneratedLevel(start: state, par: total, solutionOrder: Array(0..<total))
     }
 

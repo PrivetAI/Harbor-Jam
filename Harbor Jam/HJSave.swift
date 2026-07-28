@@ -21,13 +21,12 @@ struct HJStats: Codable, Equatable {
     var totalTaps: Int
     var totalUndos: Int
     var boatsExited: Int
-    var tugsUsed: Int
     var dailiesCompleted: Int
     var winsWithoutUndo: Int
 
     init() {
         levelsCleared = 0; totalTaps = 0; totalUndos = 0
-        boatsExited = 0; tugsUsed = 0; dailiesCompleted = 0; winsWithoutUndo = 0
+        boatsExited = 0; dailiesCompleted = 0; winsWithoutUndo = 0
     }
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
@@ -35,7 +34,6 @@ struct HJStats: Codable, Equatable {
         totalTaps = try c.decodeIfPresent(Int.self, forKey: .totalTaps) ?? 0
         totalUndos = try c.decodeIfPresent(Int.self, forKey: .totalUndos) ?? 0
         boatsExited = try c.decodeIfPresent(Int.self, forKey: .boatsExited) ?? 0
-        tugsUsed = try c.decodeIfPresent(Int.self, forKey: .tugsUsed) ?? 0
         dailiesCompleted = try c.decodeIfPresent(Int.self, forKey: .dailiesCompleted) ?? 0
         winsWithoutUndo = try c.decodeIfPresent(Int.self, forKey: .winsWithoutUndo) ?? 0
     }
@@ -123,7 +121,6 @@ enum HJAchievements {
         HJAchievement(id: "no_undo_40", title: "Iron Compass", detail: "Win 40 levels without using undo") { $0.stats.winsWithoutUndo >= 40 },
         HJAchievement(id: "daily_1", title: "Morning Round", detail: "Complete a Daily Jam") { $0.stats.dailiesCompleted >= 1 },
         HJAchievement(id: "daily_streak_7", title: "Seven Tides", detail: "Reach a 7-day Daily streak") { $0.dailyStreak >= 7 },
-        HJAchievement(id: "tugs_15", title: "Tug Captain", detail: "Use the tug 15 times") { $0.stats.tugsUsed >= 15 },
         HJAchievement(id: "taps_2000", title: "Thousand Horns", detail: "Make 2,000 moves") { $0.stats.totalTaps >= 2000 },
     ]
 }
@@ -185,7 +182,7 @@ final class HJStore: ObservableObject {
     }
 
     /// Report a campaign win. Returns earned stars.
-    func reportCampaignWin(chapter: Int, level: Int, taps: Int, par: Int, usedUndo: Bool, boatsExited: Int, tugsUsed: Int, undos: Int) -> Int {
+    func reportCampaignWin(chapter: Int, level: Int, taps: Int, par: Int, usedUndo: Bool, boatsExited: Int, undos: Int) -> Int {
         let stars: Int
         if taps <= par { stars = 3 } else if taps <= par + 2 { stars = 2 } else { stars = 1 }
         let key = "\(chapter)-\(level)"
@@ -194,14 +191,14 @@ final class HJStore: ObservableObject {
             save.records[key] = HJLevelRecord(stars: max(stars, old?.stars ?? 0),
                                               bestTaps: min(taps, old?.bestTaps ?? Int.max))
         }
-        applyCommonWinStats(taps: taps, usedUndo: usedUndo, boatsExited: boatsExited, tugsUsed: tugsUsed, undos: undos)
+        applyCommonWinStats(taps: taps, usedUndo: usedUndo, boatsExited: boatsExited, undos: undos)
         save.stats.levelsCleared += 1
         refreshAchievements()
         persist()
         return stars
     }
 
-    func reportDailyWin(dayKey: Int, taps: Int, usedUndo: Bool, boatsExited: Int, tugsUsed: Int, undos: Int) {
+    func reportDailyWin(dayKey: Int, taps: Int, usedUndo: Bool, boatsExited: Int, undos: Int) {
         let keyStr = String(dayKey)
         let firstToday = save.bestDailyTaps[keyStr] == nil
         if firstToday {
@@ -215,16 +212,15 @@ final class HJStore: ObservableObject {
         }
         let best = save.bestDailyTaps[keyStr] ?? Int.max
         save.bestDailyTaps[keyStr] = min(best, taps)
-        applyCommonWinStats(taps: taps, usedUndo: usedUndo, boatsExited: boatsExited, tugsUsed: tugsUsed, undos: undos)
+        applyCommonWinStats(taps: taps, usedUndo: usedUndo, boatsExited: boatsExited, undos: undos)
         refreshAchievements()
         persist()
     }
 
-    private func applyCommonWinStats(taps: Int, usedUndo: Bool, boatsExited: Int, tugsUsed: Int, undos: Int) {
+    private func applyCommonWinStats(taps: Int, usedUndo: Bool, boatsExited: Int, undos: Int) {
         save.stats.totalTaps += taps
         save.stats.totalUndos += undos
         save.stats.boatsExited += boatsExited
-        save.stats.tugsUsed += tugsUsed
         if !usedUndo { save.stats.winsWithoutUndo += 1 }
     }
 

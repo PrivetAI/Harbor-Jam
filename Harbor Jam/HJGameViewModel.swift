@@ -18,11 +18,9 @@ final class HJGameViewModel: ObservableObject {
     @Published var earnedStars = 0
     @Published var shakeBoatID: Int? = nil
     @Published var lastExitedBoatID: Int? = nil
-    @Published var tugArmed = false
 
     private var undoStack: [HJBoardState] = []
     private(set) var undosUsed = 0
-    private(set) var tugsUsed = 0
     private var soundOn: Bool
     private var hapticsOn: Bool
 
@@ -49,19 +47,6 @@ final class HJGameViewModel: ObservableObject {
 
     func tapBoat(_ id: Int, store: HJStore) {
         guard !won else { return }
-        if tugArmed {
-            let before = state
-            if HJEngine.tugRotate(boatID: id, state: &state) {
-                undoStack.append(before)
-                tugsUsed += 1
-                haptic(.light)
-                playSound(1104)
-            } else {
-                shake(id)
-            }
-            tugArmed = false
-            return
-        }
         let before = state
         let outcome = HJEngine.tap(boatID: id, state: &state)
         switch outcome {
@@ -101,7 +86,6 @@ final class HJGameViewModel: ObservableObject {
             undosUsed += 1
         }
         state = initialState
-        tugArmed = false
     }
 
     private func finish(store: HJStore) {
@@ -114,13 +98,13 @@ final class HJGameViewModel: ObservableObject {
                                                   taps: state.taps, par: par,
                                                   usedUndo: undosUsed > 0,
                                                   boatsExited: totalBoats,
-                                                  tugsUsed: tugsUsed, undos: undosUsed)
+                                                  undos: undosUsed)
         case .daily(let dayKey):
             earnedStars = state.taps <= par ? 3 : (state.taps <= par + 2 ? 2 : 1)
             store.reportDailyWin(dayKey: dayKey, taps: state.taps,
                                  usedUndo: undosUsed > 0,
                                  boatsExited: totalBoats,
-                                 tugsUsed: tugsUsed, undos: undosUsed)
+                                 undos: undosUsed)
         }
     }
 
