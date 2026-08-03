@@ -173,6 +173,7 @@ struct HJSim {
         advanceUnloading()
         updateGrounding()
         burnPatience()
+        if channelBusy { counters.channelBusyTicks += 1 }
         if isOver && endTick == nil { endTick = tick }
     }
 

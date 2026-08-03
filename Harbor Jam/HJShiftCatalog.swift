@@ -7,12 +7,21 @@ import Foundation
 enum HJTuning {
     static let tickHz = 20
 
-    /// Work units per ton, in doubled units (see `HJShip.unloadLeft`).
+    /// Work units per ton, in doubled units (see `HJShip.unloadLeft`), so a hull
+    /// of `tons` occupies her berths for `tons · workPerTon` ticks on matching
+    /// gear and 2.5× that on the wrong gear.
+    ///
+    /// These are large relative to `channelTransitTicks` on purpose. The channel
+    /// is a serial resource: every ship spends 2·transit in it, so transit sets a
+    /// hard ceiling on throughput. Unloading is parallel across berths, so it is
+    /// what fills the quay. Measured with a short unload and a long channel, the
+    /// quay sat nearly empty and the arrival queue exploded — packing, gear and
+    /// tide could not matter, and all three policies failed identically.
     static func workPerTon(_ cargo: HJCargo) -> Int {
         switch cargo {
-        case .container: return 6
-        case .bulk: return 8
-        case .liquid: return 5
+        case .container: return 60
+        case .bulk: return 75
+        case .liquid: return 50
         }
     }
 
@@ -46,6 +55,12 @@ struct HJPortTemplate {
     var depthRange: ClosedRange<Int>
     var equipment: [HJEquipment]     // pool drawn from when laying out a quay
     var cargoes: [HJCargo]
+    /// Ticks between arrivals. This is the primary difficulty dial: mean gap
+    /// against mean berth occupancy decides how full the quay runs, and mean gap
+    /// against 2·channelTransitTicks decides whether the channel can keep up at
+    /// all. A gap below 2·transit means the queue grows without bound and every
+    /// policy loses — that is an unplayable shift, not a hard one.
+    var arrivalGap: ClosedRange<Int>
     var channelTransitTicks: Int
     var tideAmplitude: Int
     var tideStepTicks: Int
@@ -76,54 +91,61 @@ enum HJCatalog {
     static let ports: [HJPortTemplate] = [
         HJPortTemplate(index: 1, name: "Quiet Cove", tagline: "Learn the quay",
                        slotCount: 8, depthRange: 5...5, equipment: [.crane],
-                       cargoes: [.container], channelTransitTicks: 30,
+                       cargoes: [.container], arrivalGap: 130...190,
+                       channelTransitTicks: 20,
                        tideAmplitude: 0, tideStepTicks: 0,
                        shipLengths: 2...3, draftRange: 1...3, shipCount: 12...16,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
         HJPortTemplate(index: 2, name: "Tidewater Quay", tagline: "Mind the water line",
                        slotCount: 9, depthRange: 2...5, equipment: [.crane],
-                       cargoes: [.container], channelTransitTicks: 30,
-                       tideAmplitude: 1, tideStepTicks: 100,
+                       cargoes: [.container], arrivalGap: 120...180,
+                       channelTransitTicks: 20,
+                       tideAmplitude: 1, tideStepTicks: 120,
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 14...18,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
         HJPortTemplate(index: 3, name: "Narrow Channel", tagline: "One way in",
                        slotCount: 9, depthRange: 2...5, equipment: [.crane],
-                       cargoes: [.container], channelTransitTicks: 80,
-                       tideAmplitude: 1, tideStepTicks: 100,
+                       cargoes: [.container], arrivalGap: 110...165,
+                       channelTransitTicks: 40,
+                       tideAmplitude: 1, tideStepTicks: 120,
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 16...20,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
         HJPortTemplate(index: 4, name: "Mixed Berths", tagline: "Right gear, right berth",
                        slotCount: 10, depthRange: 2...5,
-                       equipment: [.crane, .conveyor, .pipeline, .none],
-                       cargoes: [.container, .bulk, .liquid], channelTransitTicks: 80,
-                       tideAmplitude: 1, tideStepTicks: 100,
+                       equipment: [.crane, .conveyor, .pipeline],
+                       cargoes: [.container, .bulk, .liquid], arrivalGap: 105...160,
+                       channelTransitTicks: 40,
+                       tideAmplitude: 1, tideStepTicks: 120,
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 16...22,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
         HJPortTemplate(index: 5, name: "Storm Roads", tagline: "Weather and repairs",
                        slotCount: 10, depthRange: 2...5,
-                       equipment: [.crane, .conveyor, .pipeline, .none],
-                       cargoes: [.container, .bulk, .liquid], channelTransitTicks: 80,
-                       tideAmplitude: 1, tideStepTicks: 100,
+                       equipment: [.crane, .conveyor, .pipeline],
+                       cargoes: [.container, .bulk, .liquid], arrivalGap: 110...165,
+                       channelTransitTicks: 40,
+                       tideAmplitude: 1, tideStepTicks: 120,
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 18...24,
                        usesOutages: true, usesStorms: true, usesVIP: false,
                        longShipTransitPenalty: false),
         HJPortTemplate(index: 6, name: "Deepwater Port", tagline: "Big hulls, deep water",
-                       slotCount: 12, depthRange: 2...5,
-                       equipment: [.crane, .conveyor, .pipeline, .none],
-                       cargoes: [.container, .bulk, .liquid], channelTransitTicks: 80,
-                       tideAmplitude: 2, tideStepTicks: 90,
+                       slotCount: 12, depthRange: 3...7,
+                       equipment: [.crane, .conveyor, .pipeline],
+                       cargoes: [.container, .bulk, .liquid], arrivalGap: 115...170,
+                       channelTransitTicks: 40,
+                       tideAmplitude: 2, tideStepTicks: 110,
                        shipLengths: 3...5, draftRange: 2...5, shipCount: 20...26,
                        usesOutages: true, usesStorms: true, usesVIP: false,
                        longShipTransitPenalty: true),
         HJPortTemplate(index: 7, name: "Grand Harbor", tagline: "Everything at once",
-                       slotCount: 12, depthRange: 2...5,
+                       slotCount: 12, depthRange: 3...7,
                        equipment: [.crane, .conveyor, .pipeline, .none],
-                       cargoes: [.container, .bulk, .liquid], channelTransitTicks: 80,
-                       tideAmplitude: 2, tideStepTicks: 90,
+                       cargoes: [.container, .bulk, .liquid], arrivalGap: 115...170,
+                       channelTransitTicks: 40,
+                       tideAmplitude: 2, tideStepTicks: 110,
                        shipLengths: 2...5, draftRange: 1...5, shipCount: 22...28,
                        usesOutages: true, usesStorms: true, usesVIP: true,
                        longShipTransitPenalty: true),

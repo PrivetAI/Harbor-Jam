@@ -27,10 +27,19 @@ func forgeSeed(port: Int, shift: Int, salt: Int) -> UInt64 {
 }
 
 func forgeHarbor(template t: HJPortTemplate, rng: inout ForgeRNG) -> HJHarborDef {
+    // Equipment is dealt round-robin and then shuffled, not drawn independently
+    // per slot. Independent draws leave whole cargo types with one berth or none
+    // on some seeds, which is not a hard shift — it is an unfair one, and the
+    // player cannot tell the two apart.
+    var gear: [HJEquipment] = []
+    for i in 0..<t.slotCount { gear.append(t.equipment[i % t.equipment.count]) }
+    for i in stride(from: gear.count - 1, to: 0, by: -1) {
+        gear.swapAt(i, rng.int(i + 1))
+    }
+
     var slots: [HJSlot] = []
-    for _ in 0..<t.slotCount {
-        slots.append(HJSlot(depth: rng.inRange(t.depthRange),
-                            equipment: rng.pick(t.equipment)))
+    for i in 0..<t.slotCount {
+        slots.append(HJSlot(depth: rng.inRange(t.depthRange), equipment: gear[i]))
     }
     return HJHarborDef(slots: slots,
                        channelTransitTicks: t.channelTransitTicks,
@@ -57,12 +66,13 @@ func forgeArrivals(template t: HJPortTemplate, harbor: HJHarborDef,
         let cargo = rng.pick(t.cargoes)
         let tons = 2 + rng.int(5)
         let vip = t.usesVIP && rng.int(6) == 0
-        let patience = (vip ? 900 : 1600) + rng.int(600)
+        // Patience is stored doubled; these are ticks of real waiting.
+        let patience = (vip ? 320 : 640) + rng.int(300)
         arrivals.append(HJArrival(tick: at,
                                   ship: HJShip(id: id, length: length, draft: draft,
                                                cargo: cargo, tons: tons,
                                                patienceTicks: patience * 2, isVIP: vip)))
-        at += 30 + rng.int(50)
+        at += rng.inRange(t.arrivalGap)
     }
     return arrivals
 }

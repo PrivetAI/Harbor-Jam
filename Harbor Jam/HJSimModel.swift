@@ -130,7 +130,13 @@ enum HJBerthRefusal: Int, Equatable {
 /// and nobody noticed until something counted them.
 struct HJSimCounters: Codable, Equatable {
     var groundings: Int = 0
+    /// Commands refused because the channel was occupied. Counts player mistakes
+    /// only — a policy checks before it acts, so this stays 0 in the harness and
+    /// cannot be used to prove the channel matters.
     var channelRefusals: Int = 0
+    /// Ticks the channel spent occupied. This is the honest measure of the
+    /// channel being a contended resource, and it is what the gate reads.
+    var channelBusyTicks: Int = 0
     var mismatchedUnloads: Int = 0
     var shipsServed: Int = 0
     var shipsLost: Int = 0
