@@ -235,7 +235,7 @@ struct QLShiftView: View {
             .background(RoundedRectangle(cornerRadius: 14).fill(QLTheme.cardBG))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(QLTheme.contour, lineWidth: 1))
             .padding(.horizontal, 24)
-            .padding(.bottom, 24)
+            .padding(.bottom, 56)
         }
     }
 
