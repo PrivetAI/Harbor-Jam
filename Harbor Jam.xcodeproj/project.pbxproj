@@ -11,6 +11,11 @@
 		C0DEAD0000000000000002 /* HJAdaptive.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEAD0000000000000001 /* HJAdaptive.swift */; };
 		C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000003 /* HJShiftCatalog.swift */; };
 		C0DE520000000000000002 /* HJSim.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000002 /* HJSim.swift */; };
+		C0DE520000000000000007 /* HJShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000007 /* HJShiftViewModel.swift */; };
+		C0DE520000000000000005 /* HJHarborBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000005 /* HJHarborBoardView.swift */; };
+		C0DE520000000000000006 /* HJShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000006 /* HJShiftView.swift */; };
+		C0DE520000000000000008 /* HJPortsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000008 /* HJPortsView.swift */; };
+		C0DE520000000000000009 /* HJShipyardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000009 /* HJShipyardView.swift */; };
 		C0DE520000000000000001 /* HJSimModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000001 /* HJSimModel.swift */; };
 		C0DE520000000000000004 /* HJSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000004 /* HJSprites.swift */; };
 		03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* HJTheme.swift */; };
@@ -28,6 +33,11 @@
 		C0DEAD0000000000000001 /* HJAdaptive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJAdaptive.swift; sourceTree = "<group>"; };
 		C0DE510000000000000003 /* HJShiftCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftCatalog.swift; sourceTree = "<group>"; };
 		C0DE510000000000000002 /* HJSim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSim.swift; sourceTree = "<group>"; };
+		C0DE510000000000000007 /* HJShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftViewModel.swift; sourceTree = "<group>"; };
+		C0DE510000000000000005 /* HJHarborBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJHarborBoardView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000006 /* HJShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000008 /* HJPortsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJPortsView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000009 /* HJShipyardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShipyardView.swift; sourceTree = "<group>"; };
 		C0DE510000000000000001 /* HJSimModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSimModel.swift; sourceTree = "<group>"; };
 		C0DE510000000000000004 /* HJSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSprites.swift; sourceTree = "<group>"; };
 		09216A650447FE6B08DEE37B /* HarborJamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamApp.swift; sourceTree = "<group>"; };
@@ -75,6 +85,11 @@
 				6103E9862DA27096EC4D1AEA /* HJSave.swift */,
 				C0DE510000000000000003 /* HJShiftCatalog.swift */,
 				C0DE510000000000000002 /* HJSim.swift */,
+				C0DE510000000000000007 /* HJShiftViewModel.swift */,
+				C0DE510000000000000005 /* HJHarborBoardView.swift */,
+				C0DE510000000000000006 /* HJShiftView.swift */,
+				C0DE510000000000000008 /* HJPortsView.swift */,
+				C0DE510000000000000009 /* HJShipyardView.swift */,
 				C0DE510000000000000001 /* HJSimModel.swift */,
 				C0DE510000000000000004 /* HJSprites.swift */,
 				ED7ABB41533F46E128EC3724 /* HJTheme.swift */,
@@ -163,6 +178,11 @@
 				0943364D376D3F1FE86C8C61 /* HJSave.swift in Sources */,
 				C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */,
 				C0DE520000000000000002 /* HJSim.swift in Sources */,
+				C0DE520000000000000007 /* HJShiftViewModel.swift in Sources */,
+				C0DE520000000000000005 /* HJHarborBoardView.swift in Sources */,
+				C0DE520000000000000006 /* HJShiftView.swift in Sources */,
+				C0DE520000000000000008 /* HJPortsView.swift in Sources */,
+				C0DE520000000000000009 /* HJShipyardView.swift in Sources */,
 				C0DE520000000000000001 /* HJSimModel.swift in Sources */,
 				C0DE520000000000000004 /* HJSprites.swift in Sources */,
 				03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */,

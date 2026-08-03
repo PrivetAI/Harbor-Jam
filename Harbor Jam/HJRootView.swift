@@ -13,7 +13,7 @@ struct HJRootView: View {
                 Group {
                     switch selectedTab {
                     case 0:
-                        NavigationView { HJPortsPlaceholder() }
+                        NavigationView { HJPortsView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 1:
                         NavigationView { HJWatchPlaceholder() }
@@ -94,20 +94,8 @@ struct HJRootView: View {
     }
 }
 
-/// Replaced by `HJPortsView` in the ports task. Present so the app builds and
-/// runs at every commit rather than only at the end.
-private struct HJPortsPlaceholder: View {
-    var body: some View {
-        ZStack {
-            HJTheme.chartDeep.ignoresSafeArea()
-            Text("Ports")
-                .font(HJTheme.display(24))
-                .foregroundColor(HJTheme.cyan)
-        }
-        .navigationBarHidden(true)
-    }
-}
-
+/// Replaced by `HJWatchView` in the endless-mode task. Present so the app builds
+/// and runs at every commit rather than only at the end.
 private struct HJWatchPlaceholder: View {
     var body: some View {
         ZStack {

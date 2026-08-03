@@ -5,7 +5,17 @@ import Foundation
 /// magic number anywhere else in the codebase is a bug, because it would be a
 /// lever the gate cannot see.
 enum HJTuning {
-    static let tickHz = 20
+    /// The ONLY place ticks map to wall-clock time. Every balance number in the
+    /// game, the whole baked corpus and every policy in the harness are in ticks,
+    /// so changing this re-paces the game for a human without moving a single
+    /// measured property — the acceptance gate never looks at seconds.
+    ///
+    /// It was 20. Play-testing on device showed the obvious calibration gap: the
+    /// reference policy acts on the tick a ship arrives, a person needs a couple
+    /// of seconds to read the hull and pick a berth. At 20 Hz a shift lost two
+    /// ships in the first twenty seconds. At 10 Hz patience runs 64–94 s and
+    /// ships arrive every 13–19 s, which is a mobile pace.
+    static let tickHz = 10
 
     /// Work units per ton, in doubled units (see `HJShip.unloadLeft`), so a hull
     /// of `tons` occupies her berths for `tons · workPerTon` ticks on matching
