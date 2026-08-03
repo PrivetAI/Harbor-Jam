@@ -9,6 +9,22 @@ import UIKit
 /// shipped, already-simulator-tested phone layout must not shift there. On
 /// anything that is not a wide iPad canvas every helper below returns the view
 /// completely untouched, so the iPhone rendering is byte-identical to 1.0.
+/// Height of the top safe area, read from the key window.
+///
+/// This app hides every navigation bar, so scrolled content draws straight over
+/// the clock unless something opaque covers the inset. A `GeometryReader` cannot
+/// supply it here: inside a view that already ignores the safe area it reports
+/// zero.
+enum HJSafeArea {
+    static var top: CGFloat {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first(where: { $0.isKeyWindow })?
+            .safeAreaInsets.top ?? 47
+    }
+}
+
 enum HJLayout {
 
     static var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }

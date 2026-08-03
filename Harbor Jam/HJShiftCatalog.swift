@@ -195,3 +195,80 @@ extension HJCatalog {
         loadShifts().first { $0.port == port && $0.shift == shift }
     }
 }
+
+// MARK: - Watch (endless)
+
+enum HJWatch {
+    static let slotCount = 10
+    static let waveTicks = 900          // 90 s at 10 Hz — one upgrade choice per wave
+    static let shipsPerWave = 6
+    /// Arrival spacing shrinks 4 % per wave and floors at 40 % of the opening
+    /// gap. Without a floor the stream eventually outruns the channel itself and
+    /// the run ends on arithmetic rather than on a mistake.
+    static let openingGap = 150
+    static let gapDecayPercent = 96
+    static let minGapPercent = 40
+
+    /// A deterministic endless shift. Uses the same `HJShiftDef` type as the
+    /// campaign, so `HJSim` does not know the difference and neither does the
+    /// harness. `parTicks` and both targets are `Int.max`: the Watch scores in
+    /// tons, never in stars.
+    static func shift(seed: UInt64, waves: Int) -> HJShiftDef {
+        var rng = HJWatchRNG(seed: seed)
+        var slots: [HJSlot] = []
+        let gear: [HJEquipment] = [.crane, .conveyor, .pipeline]
+        for i in 0..<slotCount {
+            slots.append(HJSlot(depth: 3 + rng.int(4), equipment: gear[i % gear.count]))
+        }
+        for i in stride(from: slots.count - 1, to: 0, by: -1) {
+            slots.swapAt(i, rng.int(i + 1))
+        }
+
+        var arrivals: [HJArrival] = []
+        var at = 30
+        var gap = openingGap
+        let floor = openingGap * minGapPercent / 100
+        var id = 1
+        for _ in 0..<waves {
+            for _ in 0..<shipsPerWave {
+                let length = 2 + rng.int(4)
+                let draft = 1 + rng.int(5)
+                let cargo = HJCargo.allCases[rng.int(3)]
+                arrivals.append(HJArrival(tick: at,
+                                          ship: HJShip(id: id, length: length,
+                                                       draft: min(draft, 6),
+                                                       cargo: cargo,
+                                                       tons: 2 + rng.int(5),
+                                                       patienceTicks: (620 + rng.int(300)) * 2,
+                                                       isVIP: false)))
+                id += 1
+                at += gap - rng.int(30)
+            }
+            gap = max(floor, gap * gapDecayPercent / 100)
+        }
+
+        return HJShiftDef(port: 0, shift: 0,
+                          harbor: HJHarborDef(slots: slots, channelTransitTicks: 30,
+                                              tideAmplitude: 1, tideStepTicks: 130,
+                                              roadsteadCapacity: 5),
+                          arrivals: arrivals, outages: [], storms: [],
+                          parTicks: Int.max, target2: Int.max, target3: Int.max)
+    }
+}
+
+/// SplitMix64 again — the harness has its own copy, and the app must not depend
+/// on the tooling.
+struct HJWatchRNG {
+    private var state: UInt64
+    init(seed: UInt64) { state = seed &+ 0x9E3779B97F4A7C15 }
+    mutating func next() -> UInt64 {
+        state = state &+ 0x9E3779B97F4A7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+        return z ^ (z >> 31)
+    }
+    mutating func int(_ upper: Int) -> Int {
+        upper <= 0 ? 0 : Int(next() % UInt64(upper))
+    }
+}

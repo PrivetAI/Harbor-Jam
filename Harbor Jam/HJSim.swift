@@ -6,7 +6,11 @@ import Foundation
 /// lets the offline harness measure the game the player actually gets.
 struct HJSim {
     let def: HJShiftDef
-    let upgrades: HJUpgradeLevels
+    /// Fixed for a campaign shift; the Watch hands out one more level per wave,
+    /// so this has to be settable mid-run. Determinism is unaffected: the
+    /// harness never calls `applyUpgrades`, and a change only ever affects
+    /// commands issued after it.
+    private(set) var upgrades: HJUpgradeLevels
 
     private(set) var tick: Int = 0
     private(set) var ships: [HJShip] = []
@@ -15,16 +19,26 @@ struct HJSim {
     private(set) var endTick: Int? = nil
 
     private var pending: [HJArrival]        // not yet arrived, ascending by tick
-    private let roadsteadCapacity: Int
     private let penalisesLongShips: Bool
+
+    /// Computed, not stored: a Watch upgrade taken mid-run has to widen the
+    /// roadstead immediately.
+    var roadsteadCapacity: Int { def.harbor.roadsteadCapacity + upgrades.roadstead }
 
     init(def: HJShiftDef, upgrades: HJUpgradeLevels) {
         self.def = def
         self.upgrades = upgrades
         self.reputation = HJTuning.baseReputation + upgrades.crew
         self.pending = def.arrivals.sorted { $0.tick < $1.tick }
-        self.roadsteadCapacity = def.harbor.roadsteadCapacity + upgrades.roadstead
         self.penalisesLongShips = HJCatalog.template(port: def.port)?.longShipTransitPenalty ?? false
+    }
+
+    /// Raise upgrade levels mid-run. Reputation gained from a new crew level is
+    /// credited immediately; nothing already resolved is recomputed.
+    mutating func applyUpgrades(_ new: HJUpgradeLevels) {
+        let crewGain = max(0, new.crew - upgrades.crew)
+        upgrades = new
+        reputation += crewGain
     }
 
     // MARK: - Derived state

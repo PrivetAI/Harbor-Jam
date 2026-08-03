@@ -118,7 +118,7 @@ struct HJMoreView: View {
 
     private var codexCard: some View {
         VStack(spacing: 12) {
-            sectionHeader("Harbor Manual")
+            sectionHeader("Harbour Manual")
             codexGrid
         }
         .padding(16)
@@ -143,48 +143,37 @@ struct HJMoreView: View {
 
     @ViewBuilder
     private var codexEntries: some View {
-        codexEntry(title: "Boats & Bows",
-                   text: "Every boat sails only forward, in the direction of its pointed bow. A clear line to the edge means it exits for good. Blocked boats bump and wait.") {
-            AnyView(HJArrowShape(direction: .east)
+        codexEntry(title: "The Quay",
+                   text: "A hull needs as many berths in a row as her length. Scatter short ships and the quay fragments: six berths free, none of them adjacent, and the next big hull has nowhere to go.") {
+            AnyView(HJSprite.berthCrane.image
+                .resizable().scaledToFit().frame(width: 26, height: 30))
+        }
+        codexEntry(title: "Draft & Depth",
+                   text: "The number on a hull is her draft; the number on a berth is the water over it. Draft above depth and she cannot come alongside at all.") {
+            AnyView(Text("3")
+                .font(HJTheme.mono(18, weight: .bold))
+                .foregroundColor(HJTheme.cyanSoft))
+        }
+        codexEntry(title: "The Tide",
+                   text: "Water rises and falls on a fixed cycle — the strip at the top counts down to the turn. Moor a deep hull on the flood and the ebb strands her: she keeps unloading, but she cannot leave, and she keeps every berth she is on.") {
+            AnyView(HJSprite.iconTide.image
+                .resizable().scaledToFit().frame(width: 26, height: 26))
+        }
+        codexEntry(title: "The Channel",
+                   text: "One ship in the fairway at a time, coming or going. Sending a finished hull out costs you the channel that the next arrival needs — that is the whole decision.") {
+            AnyView(HJArrowShape(direction: .north)
                 .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .frame(width: 26, height: 26))
+                .frame(width: 24, height: 24))
         }
-        codexEntry(title: "Currents",
-                   text: "Arrow lanes mark flowing water. A boat that ends its slide inside a lane is pushed one cell sideways — plan around the drift, or use it as a shortcut.") {
-            AnyView(HJWaveShape()
-                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .frame(width: 26, height: 16))
+        codexEntry(title: "Berth Gear",
+                   text: "Cranes take containers, conveyors take bulk, pipelines take liquid. Any other berth still works — at two and a half times the unloading time, with your quay tied up for all of it.") {
+            AnyView(HJSprite.cargoContainer.image
+                .resizable().scaledToFit().frame(width: 26, height: 26))
         }
-        codexEntry(title: "Tides",
-                   text: "The tide turns every 3 moves. At low tide, sandy shallows harden into solid bars no hull can cross. At high tide they flood over and open up.") {
-            AnyView(HJPulseShape()
-                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .frame(width: 26, height: 18))
-        }
-        codexEntry(title: "The Ferry",
-                   text: "The grey ferry crosses its row on a fixed schedule, advancing after each of your moves and wrapping around. It never stops for anyone — time your crossings.") {
-            AnyView(Rectangle()
-                .fill(HJTheme.cyanSoft.opacity(0.7))
-                .frame(width: 26, height: 12)
-                .cornerRadius(3))
-        }
-        codexEntry(title: "Buoy Chains",
-                   text: "A boat wearing a red buoy is anchored in place. Its key boat — somewhere in the harbor — must exit first to cast it loose.") {
-            AnyView(Circle()
-                .fill(HJTheme.alert)
-                .frame(width: 18, height: 18))
-        }
-        codexEntry(title: "Turning Basins",
-                   text: "A boat that noses into a turning basin stops there and comes about, bow reversed. It is the only way to send a hull back the way it came — park it clear of a lane now, come back for it later.") {
-            AnyView(HJTugShape()
-                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .frame(width: 22, height: 22))
-        }
-        codexEntry(title: "Barges",
-                   text: "Wide 2×2 barges shrug off currents entirely and block them for others. Slow to place, mighty to move.") {
-            AnyView(RoundedRectangle(cornerRadius: 4)
-                .fill(HJTheme.contour)
-                .frame(width: 20, height: 20))
+        codexEntry(title: "Patience",
+                   text: "Ships on the roadstead lose patience while they wait, and the roadstead only holds so many. Every ship turned away costs an anchor. Lose them all and the harbour is jammed.") {
+            AnyView(HJSprite.iconReputation.image
+                .resizable().scaledToFit().frame(width: 24, height: 24))
         }
     }
 

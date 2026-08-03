@@ -16,7 +16,7 @@ struct HJRootView: View {
                         NavigationView { HJPortsView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 1:
-                        NavigationView { HJWatchPlaceholder() }
+                        NavigationView { HJWatchView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 2:
                         NavigationView { HJAwardsView() }
@@ -30,6 +30,17 @@ struct HJRootView: View {
             }
 
             tabBar
+
+            // LAST sibling on purpose: an opaque band over the top safe area, so
+            // scrolled content stops drawing across the clock. Anything added
+            // after this would sit under it.
+            VStack(spacing: 0) {
+                HJTheme.chartDeep
+                    .frame(height: HJSafeArea.top)
+                Spacer(minLength: 0)
+            }
+            .ignoresSafeArea(edges: .top)
+            .allowsHitTesting(false)
         }
         .preferredColorScheme(.dark)
         .onAppear {
@@ -94,16 +105,3 @@ struct HJRootView: View {
     }
 }
 
-/// Replaced by `HJWatchView` in the endless-mode task. Present so the app builds
-/// and runs at every commit rather than only at the end.
-private struct HJWatchPlaceholder: View {
-    var body: some View {
-        ZStack {
-            HJTheme.chartDeep.ignoresSafeArea()
-            Text("Watch")
-                .font(HJTheme.display(24))
-                .foregroundColor(HJTheme.cyan)
-        }
-        .navigationBarHidden(true)
-    }
-}

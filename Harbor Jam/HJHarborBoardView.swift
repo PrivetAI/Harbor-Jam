@@ -193,7 +193,7 @@ struct HJHarborBoardView: View {
                     .font(HJTheme.body(11, weight: .semibold))
                     .foregroundColor(HJTheme.cyanSoft.opacity(0.6))
                 Spacer()
-                Text("\(vm.sim.waitingShips.count)/\(vm.sim.def.harbor.roadsteadCapacity + vm.sim.upgrades.roadstead)")
+                Text("\(vm.sim.waitingShips.count)/\(vm.sim.roadsteadCapacity)")
                     .font(HJTheme.mono(11))
                     .foregroundColor(HJTheme.cyanSoft.opacity(0.6))
             }

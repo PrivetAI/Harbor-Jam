@@ -82,6 +82,9 @@ final class HJShiftViewModel: ObservableObject {
     @discardableResult
     func send(shipID: Int) -> Bool { sim.depart(shipID: shipID) }
 
+    /// Watch mode only: hands the run its per-wave upgrade.
+    func applyUpgrades(_ levels: HJUpgradeLevels) { sim.applyUpgrades(levels) }
+
     func canBerth(shipID: Int, atSlot slot: Int) -> HJBerthRefusal {
         sim.canBerth(shipID: shipID, atSlot: slot)
     }

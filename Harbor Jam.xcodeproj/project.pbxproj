@@ -16,6 +16,7 @@
 		C0DE520000000000000006 /* HJShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000006 /* HJShiftView.swift */; };
 		C0DE520000000000000008 /* HJPortsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000008 /* HJPortsView.swift */; };
 		C0DE520000000000000009 /* HJShipyardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000009 /* HJShipyardView.swift */; };
+		C0DE52000000000000000A /* HJWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000A /* HJWatchView.swift */; };
 		C0DE520000000000000001 /* HJSimModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000001 /* HJSimModel.swift */; };
 		C0DE520000000000000004 /* HJSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000004 /* HJSprites.swift */; };
 		03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* HJTheme.swift */; };
@@ -38,6 +39,7 @@
 		C0DE510000000000000006 /* HJShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftView.swift; sourceTree = "<group>"; };
 		C0DE510000000000000008 /* HJPortsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJPortsView.swift; sourceTree = "<group>"; };
 		C0DE510000000000000009 /* HJShipyardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShipyardView.swift; sourceTree = "<group>"; };
+		C0DE51000000000000000A /* HJWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJWatchView.swift; sourceTree = "<group>"; };
 		C0DE510000000000000001 /* HJSimModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSimModel.swift; sourceTree = "<group>"; };
 		C0DE510000000000000004 /* HJSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSprites.swift; sourceTree = "<group>"; };
 		09216A650447FE6B08DEE37B /* HarborJamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamApp.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				C0DE510000000000000006 /* HJShiftView.swift */,
 				C0DE510000000000000008 /* HJPortsView.swift */,
 				C0DE510000000000000009 /* HJShipyardView.swift */,
+				C0DE51000000000000000A /* HJWatchView.swift */,
 				C0DE510000000000000001 /* HJSimModel.swift */,
 				C0DE510000000000000004 /* HJSprites.swift */,
 				ED7ABB41533F46E128EC3724 /* HJTheme.swift */,
@@ -183,6 +186,7 @@
 				C0DE520000000000000006 /* HJShiftView.swift in Sources */,
 				C0DE520000000000000008 /* HJPortsView.swift in Sources */,
 				C0DE520000000000000009 /* HJShipyardView.swift in Sources */,
+				C0DE52000000000000000A /* HJWatchView.swift in Sources */,
 				C0DE520000000000000001 /* HJSimModel.swift in Sources */,
 				C0DE520000000000000004 /* HJSprites.swift in Sources */,
 				03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */,
