@@ -6,8 +6,8 @@ import SwiftUI
 /// All geometry derives from the parent-passed `screenSize`. Nothing here reads
 /// a `Canvas` closure's own `size`, which on iOS is not the parent's size and
 /// has silently broken camera maths in this portfolio before.
-struct HJHarborBoardView: View {
-    @ObservedObject var vm: HJShiftViewModel
+struct QLHarborBoardView: View {
+    @ObservedObject var vm: QLShiftViewModel
     var screenSize: CGSize
     @Environment(\.horizontalSizeClass) private var hSize
 
@@ -23,7 +23,7 @@ struct HJHarborBoardView: View {
     private static let maxSlotWidth: CGFloat = 62
 
     private var slotWidth: CGFloat {
-        let available = min(screenSize.width, HJLayout.wide(hSize) ? HJLayout.boardColumn : screenSize.width) - 24
+        let available = min(screenSize.width, QLLayout.wide(hSize) ? QLLayout.boardColumn : screenSize.width) - 24
         return min(available / CGFloat(slotCount), Self.maxSlotWidth)
     }
     private var boardWidth: CGFloat { slotWidth * CGFloat(slotCount) }
@@ -66,7 +66,7 @@ struct HJHarborBoardView: View {
             // One continuous wall across the whole quay, drawn by the view
             // rather than baked into each berth sprite.
             Rectangle()
-                .fill(HJTheme.gold)
+                .fill(QLTheme.gold)
                 .frame(width: boardWidth, height: 5)
         }
         .frame(width: boardWidth, height: quayHeight)
@@ -78,7 +78,7 @@ struct HJHarborBoardView: View {
         let closed = vm.sim.isOutOfService(slot: i)
         let highlight = dragHighlight(for: i)
         return ZStack {
-            HJSprite.berth(slot.equipment).image
+            QLSprite.berth(slot.equipment).image
                 .resizable()
                 .scaledToFit()
                 .opacity(closed ? 0.3 : 1)
@@ -90,14 +90,14 @@ struct HJHarborBoardView: View {
             // number the player needs while deciding where to put her.
             VStack {
                 Text("\(depth)")
-                    .font(HJTheme.mono(11, weight: .bold))
-                    .foregroundColor(depth <= 2 ? HJTheme.warn : HJTheme.cyanSoft.opacity(0.85))
+                    .font(QLTheme.mono(11, weight: .bold))
+                    .foregroundColor(depth <= 2 ? QLTheme.warn : QLTheme.cyanSoft.opacity(0.85))
                     .padding(.top, 6)
                 Spacer()
             }
             if closed {
-                HJCloseShape()
-                    .stroke(HJTheme.alert, lineWidth: 2)
+                QLCloseShape()
+                    .stroke(QLTheme.alert, lineWidth: 2)
                     .frame(width: slotWidth * 0.4, height: slotWidth * 0.4)
             }
         }
@@ -110,7 +110,7 @@ struct HJHarborBoardView: View {
         guard slot + ship.length <= slotCount else { return nil }
         let target = targetSlot(for: dragPoint, length: ship.length)
         guard slot >= target, slot < target + ship.length else { return nil }
-        return vm.canBerth(shipID: id, atSlot: target) == .none ? HJTheme.success : HJTheme.alert
+        return vm.canBerth(shipID: id, atSlot: target) == .none ? QLTheme.success : QLTheme.alert
     }
 
     private var berthedHulls: some View {
@@ -134,13 +134,13 @@ struct HJHarborBoardView: View {
 
     private var waterLayer: some View {
         ZStack {
-            HJSprite.depthContours.image
+            QLSprite.depthContours.image
                 .resizable()
                 .scaledToFill()
                 .opacity(0.14)
                 .clipped()
 
-            HJSprite.compassRose.image
+            QLSprite.compassRose.image
                 .resizable()
                 .scaledToFit()
                 .frame(width: boardWidth * 0.3)
@@ -149,17 +149,17 @@ struct HJHarborBoardView: View {
 
             channel
 
-            HJSprite.buoyPort.image
+            QLSprite.buoyPort.image
                 .resizable().scaledToFit().frame(width: 18)
                 .offset(x: -slotWidth * 1.1, y: -18)
-            HJSprite.buoyStarboard.image
+            QLSprite.buoyStarboard.image
                 .resizable().scaledToFit().frame(width: 18)
                 .offset(x: slotWidth * 1.1, y: 26)
 
             transitingHulls
         }
         .frame(width: boardWidth, height: waterHeight)
-        .background(HJTheme.chartDeep)
+        .background(QLTheme.chartDeep)
     }
 
     /// The water takes whatever the quay, the roadstead and the chrome leave.
@@ -173,7 +173,7 @@ struct HJHarborBoardView: View {
     private var channel: some View {
         ZStack {
             Rectangle()
-                .fill(vm.sim.channelBusy ? HJTheme.cyan.opacity(0.12) : Color.clear)
+                .fill(vm.sim.channelBusy ? QLTheme.cyan.opacity(0.12) : Color.clear)
                 .frame(width: slotWidth * 1.6)
             HStack(spacing: slotWidth * 1.6) {
                 dashedEdge
@@ -189,7 +189,7 @@ struct HJHarborBoardView: View {
             .overlay(
                 Rectangle()
                     .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [6, 6]))
-                    .foregroundColor(HJTheme.contour)
+                    .foregroundColor(QLTheme.contour)
             )
     }
 
@@ -211,12 +211,12 @@ struct HJHarborBoardView: View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
                 Text("Roadstead")
-                    .font(HJTheme.body(11, weight: .semibold))
-                    .foregroundColor(HJTheme.cyanSoft.opacity(0.6))
+                    .font(QLTheme.body(11, weight: .semibold))
+                    .foregroundColor(QLTheme.cyanSoft.opacity(0.6))
                 Spacer()
                 Text("\(vm.sim.waitingShips.count)/\(vm.sim.roadsteadCapacity)")
-                    .font(HJTheme.mono(11))
-                    .foregroundColor(HJTheme.cyanSoft.opacity(0.6))
+                    .font(QLTheme.mono(11))
+                    .foregroundColor(QLTheme.cyanSoft.opacity(0.6))
             }
             // Six waiting ships at full card width overflow the board, and the
             // sixth is the one about to be lost — it must stay reachable.
@@ -234,7 +234,7 @@ struct HJHarborBoardView: View {
         .frame(width: boardWidth, height: roadsteadHeight, alignment: .topLeading)
     }
 
-    private func roadsteadCard(_ ship: HJShip) -> some View {
+    private func roadsteadCard(_ ship: QLShip) -> some View {
         let cardW = max(58, min(slotWidth * CGFloat(ship.length) * 0.9, 108))
         let dragging = draggingShip == ship.id
         return VStack(spacing: 5) {
@@ -243,8 +243,8 @@ struct HJHarborBoardView: View {
             patienceBar(ship)
                 .frame(width: cardW, height: 5)
             Text("L\(ship.length) · D\(ship.draft)")
-                .font(HJTheme.mono(10))
-                .foregroundColor(HJTheme.cyanSoft.opacity(0.75))
+                .font(QLTheme.mono(10))
+                .foregroundColor(QLTheme.cyanSoft.opacity(0.75))
         }
         // The tap target must be established BEFORE any offset, and this view is
         // never `.position()`ed — a contentShape applied after positioning
@@ -265,13 +265,13 @@ struct HJHarborBoardView: View {
         )
     }
 
-    private func patienceBar(_ ship: HJShip) -> some View {
+    private func patienceBar(_ ship: QLShip) -> some View {
         let frac = ship.patienceTicks == 0 ? 0
             : max(0, min(1, Double(ship.patienceLeft) / Double(ship.patienceTicks)))
-        let color: Color = frac > 0.5 ? HJTheme.success : (frac > 0.25 ? HJTheme.warn : HJTheme.alert)
+        let color: Color = frac > 0.5 ? QLTheme.success : (frac > 0.25 ? QLTheme.warn : QLTheme.alert)
         return GeometryReader { geo in
             ZStack(alignment: .leading) {
-                Capsule().fill(HJTheme.chartGrid)
+                Capsule().fill(QLTheme.chartGrid)
                 Capsule().fill(color).frame(width: geo.size.width * CGFloat(frac))
             }
         }
@@ -279,12 +279,12 @@ struct HJHarborBoardView: View {
 
     // MARK: - Shared pieces
 
-    private func hullView(_ ship: HJShip, width: CGFloat) -> some View {
+    private func hullView(_ ship: QLShip, width: CGFloat) -> some View {
         ZStack {
-            HJSprite.hull(length: ship.length).image
+            QLSprite.hull(length: ship.length).image
                 .resizable()
                 .scaledToFit()
-            HJSprite.cargo(ship.cargo).image
+            QLSprite.cargo(ship.cargo).image
                 .resizable()
                 .scaledToFit()
                 .frame(width: width * 0.22)
@@ -292,20 +292,20 @@ struct HJHarborBoardView: View {
             // Clear of the bow chevron, which the hull art puts at +0.05…+0.11
             // of the width from centre.
             Text("\(ship.draft)")
-                .font(HJTheme.mono(11, weight: .bold))
-                .foregroundColor(HJTheme.cyanSoft)
+                .font(QLTheme.mono(11, weight: .bold))
+                .foregroundColor(QLTheme.cyanSoft)
                 .offset(x: -width * 0.08)
             if ship.state == .aground {
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(HJTheme.alert, lineWidth: 2)
+                    .stroke(QLTheme.alert, lineWidth: 2)
             }
             if ship.state == .berthed && ship.unloadLeft <= 0 {
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(HJTheme.gold, lineWidth: 2)
+                    .stroke(QLTheme.gold, lineWidth: 2)
             }
             if ship.isVIP {
                 Circle()
-                    .fill(HJTheme.gold)
+                    .fill(QLTheme.gold)
                     .frame(width: 7, height: 7)
                     .offset(x: width * 0.34, y: -12)
             }

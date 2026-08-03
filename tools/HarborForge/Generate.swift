@@ -26,22 +26,22 @@ func forgeSeed(port: Int, shift: Int, salt: Int) -> UInt64 {
         &+ UInt64(port) &* 7919 &+ UInt64(shift) &* 104729 &+ UInt64(salt) &* 1_000_003
 }
 
-func forgeHarbor(template t: HJPortTemplate, rng: inout ForgeRNG) -> HJHarborDef {
+func forgeHarbor(template t: QLPortTemplate, rng: inout ForgeRNG) -> QLHarborDef {
     // Equipment is dealt round-robin and then shuffled, not drawn independently
     // per slot. Independent draws leave whole cargo types with one berth or none
     // on some seeds, which is not a hard shift — it is an unfair one, and the
     // player cannot tell the two apart.
-    var gear: [HJEquipment] = []
+    var gear: [QLEquipment] = []
     for i in 0..<t.slotCount { gear.append(t.equipment[i % t.equipment.count]) }
     for i in stride(from: gear.count - 1, to: 0, by: -1) {
         gear.swapAt(i, rng.int(i + 1))
     }
 
-    var slots: [HJSlot] = []
+    var slots: [QLSlot] = []
     for i in 0..<t.slotCount {
-        slots.append(HJSlot(depth: rng.inRange(t.depthRange), equipment: gear[i]))
+        slots.append(QLSlot(depth: rng.inRange(t.depthRange), equipment: gear[i]))
     }
-    return HJHarborDef(slots: slots,
+    return QLHarborDef(slots: slots,
                        channelTransitTicks: t.channelTransitTicks,
                        tideAmplitude: t.tideAmplitude,
                        tideStepTicks: t.tideStepTicks,
@@ -52,11 +52,11 @@ func forgeHarbor(template t: HJPortTemplate, rng: inout ForgeRNG) -> HJHarborDef
 /// of a solution. Nothing here consults a target answer, which is the structural
 /// difference from the previous generator: that one built levels by undoing a
 /// solution and then discarded every seed where a mechanic would have mattered.
-func forgeArrivals(template t: HJPortTemplate, harbor: HJHarborDef,
-                   rng: inout ForgeRNG) -> [HJArrival] {
+func forgeArrivals(template t: QLPortTemplate, harbor: QLHarborDef,
+                   rng: inout ForgeRNG) -> [QLArrival] {
     let count = rng.inRange(t.shipCount)
     let maxUsableDepth = (harbor.slots.map { $0.depth }.max() ?? 5) + t.tideAmplitude
-    var arrivals: [HJArrival] = []
+    var arrivals: [QLArrival] = []
     var at = 20
     for id in 1...count {
         let length = rng.inRange(t.shipLengths)
@@ -68,8 +68,8 @@ func forgeArrivals(template t: HJPortTemplate, harbor: HJHarborDef,
         let vip = t.usesVIP && rng.int(6) == 0
         // Patience is stored doubled; these are ticks of real waiting.
         let patience = (vip ? 320 : 640) + rng.int(300)
-        arrivals.append(HJArrival(tick: at,
-                                  ship: HJShip(id: id, length: length, draft: draft,
+        arrivals.append(QLArrival(tick: at,
+                                  ship: QLShip(id: id, length: length, draft: draft,
                                                cargo: cargo, tons: tons,
                                                patienceTicks: patience * 2, isVIP: vip)))
         at += rng.inRange(t.arrivalGap)
@@ -79,35 +79,35 @@ func forgeArrivals(template t: HJPortTemplate, harbor: HJHarborDef,
 
 /// Events are scheduled from the seed, never rolled during play: the harness has
 /// to be able to replay a shift tick for tick.
-func forgeEvents(template t: HJPortTemplate, harbor: HJHarborDef, span: Int,
-                 rng: inout ForgeRNG) -> ([HJSlotOutage], [HJStormWindow]) {
-    var outages: [HJSlotOutage] = []
-    var storms: [HJStormWindow] = []
+func forgeEvents(template t: QLPortTemplate, harbor: QLHarborDef, span: Int,
+                 rng: inout ForgeRNG) -> ([QLSlotOutage], [QLStormWindow]) {
+    var outages: [QLSlotOutage] = []
+    var storms: [QLStormWindow] = []
     if t.usesOutages {
         for _ in 0..<(1 + rng.int(2)) {
             let start = 100 + rng.int(max(1, span - 400))
-            outages.append(HJSlotOutage(slot: rng.int(harbor.slots.count),
+            outages.append(QLSlotOutage(slot: rng.int(harbor.slots.count),
                                         startTick: start,
                                         endTick: start + 200 + rng.int(201)))
         }
     }
     if t.usesStorms {
         let start = 150 + rng.int(max(1, span - 700))
-        storms.append(HJStormWindow(startTick: start, endTick: start + 600))
+        storms.append(QLStormWindow(startTick: start, endTick: start + 600))
     }
     return (outages, storms)
 }
 
 /// `parTicks` and the star targets are left at zero here — they are calibrated
 /// from policy S when the shift is accepted (see Gate.swift).
-func forgeShift(port: Int, shift: Int, salt: Int) -> HJShiftDef {
-    let t = HJCatalog.ports[port - 1]
+func forgeShift(port: Int, shift: Int, salt: Int) -> QLShiftDef {
+    let t = QLCatalog.ports[port - 1]
     var rng = ForgeRNG(seed: forgeSeed(port: port, shift: shift, salt: salt))
     let harbor = forgeHarbor(template: t, rng: &rng)
     let arrivals = forgeArrivals(template: t, harbor: harbor, rng: &rng)
     let span = (arrivals.last?.tick ?? 500) + 600
     let (outages, storms) = forgeEvents(template: t, harbor: harbor, span: span, rng: &rng)
-    return HJShiftDef(port: port, shift: shift, harbor: harbor, arrivals: arrivals,
+    return QLShiftDef(port: port, shift: shift, harbor: harbor, arrivals: arrivals,
                       outages: outages, storms: storms,
                       parTicks: 0, target2: 0, target3: 0)
 }

@@ -1,4 +1,4 @@
-# Harbor Jam — measured baseline (port dispatcher)
+# Quaylock — measured baseline (port dispatcher)
 
 Produced 2026-08-03 by `./tools/HarborForge/build.sh && ./tools/HarborForge/harborforge gate`
 against the shipped simulation and the accepted corpus. Replaces the sliding-block

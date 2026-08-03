@@ -5,15 +5,15 @@
 set -euo pipefail
 
 TOOL_DIR="$(cd "$(dirname "$0")" && pwd)"
-APP_DIR="$(cd "$TOOL_DIR/../../Harbor Jam" && pwd)"
+APP_DIR="$(cd "$TOOL_DIR/../../Quaylock" && pwd)"
 OUT="$TOOL_DIR/harborforge"
 
 # These three files import Foundation only, which is what makes this possible.
 # Adding a SwiftUI or UIKit import to any of them breaks the harness.
 APP_SOURCES=(
-  "$APP_DIR/HJSimModel.swift"
-  "$APP_DIR/HJSim.swift"
-  "$APP_DIR/HJShiftCatalog.swift"
+  "$APP_DIR/QLSimModel.swift"
+  "$APP_DIR/QLSim.swift"
+  "$APP_DIR/QLShiftCatalog.swift"
 )
 
 TOOL_SOURCES=()

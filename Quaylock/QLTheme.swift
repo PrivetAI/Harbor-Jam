@@ -3,7 +3,7 @@ import SwiftUI
 /// The nautical-chart palette. Every colour in the app comes from here, and the
 /// same hex values are hard-coded in the SVG sprites — move one and the other has
 /// to move with it.
-enum HJTheme {
+enum QLTheme {
     static let chartDeep = Color(red: 0.047, green: 0.125, blue: 0.200)  // #0C2033
     static let chartGrid = Color(red: 0.086, green: 0.204, blue: 0.294)  // #16344B
     static let contour   = Color(red: 0.184, green: 0.424, blue: 0.525)  // #2F6C86
@@ -31,12 +31,12 @@ enum HJTheme {
 }
 
 /// Heading for the arrow glyph. Local to the theme — the board is no longer a
-/// grid with compass headings, and the old `HJDirection` left with the engine.
-enum HJArrowDirection { case north, east, south, west }
+/// grid with compass headings, and the old `QLDirection` left with the engine.
+enum QLArrowDirection { case north, east, south, west }
 
 // MARK: - Custom shape icons (no SF Symbols anywhere)
 
-struct HJStarShape: Shape {
+struct QLStarShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let c = CGPoint(x: rect.midX, y: rect.midY)
@@ -53,7 +53,7 @@ struct HJStarShape: Shape {
     }
 }
 
-struct HJWaveShape: Shape {
+struct QLWaveShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let h = rect.height, w = rect.width
@@ -69,7 +69,7 @@ struct HJWaveShape: Shape {
     }
 }
 
-struct HJChevronShape: Shape {
+struct QLChevronShape: Shape {
     var pointsRight = true
     func path(in rect: CGRect) -> Path {
         var p = Path()
@@ -86,7 +86,7 @@ struct HJChevronShape: Shape {
     }
 }
 
-struct HJGearShape: Shape {
+struct QLGearShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let c = CGPoint(x: rect.midX, y: rect.midY)
@@ -104,7 +104,7 @@ struct HJGearShape: Shape {
     }
 }
 
-struct HJTrophyShape: Shape {
+struct QLTrophyShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -123,7 +123,7 @@ struct HJTrophyShape: Shape {
     }
 }
 
-struct HJLockShape: Shape {
+struct QLLockShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -138,7 +138,7 @@ struct HJLockShape: Shape {
     }
 }
 
-struct HJUndoShape: Shape {
+struct QLUndoShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let c = CGPoint(x: rect.midX, y: rect.midY)
@@ -154,7 +154,7 @@ struct HJUndoShape: Shape {
     }
 }
 
-struct HJRestartShape: Shape {
+struct QLRestartShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let c = CGPoint(x: rect.midX, y: rect.midY)
@@ -169,7 +169,7 @@ struct HJRestartShape: Shape {
     }
 }
 
-struct HJCheckShape: Shape {
+struct QLCheckShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.move(to: CGPoint(x: rect.minX + rect.width * 0.15, y: rect.midY))
@@ -179,7 +179,7 @@ struct HJCheckShape: Shape {
     }
 }
 
-struct HJPauseShape: Shape {
+struct QLPauseShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.addRoundedRect(in: CGRect(x: rect.minX + rect.width * 0.2, y: rect.minY, width: rect.width * 0.2, height: rect.height), cornerSize: CGSize(width: 2, height: 2))
@@ -188,8 +188,8 @@ struct HJPauseShape: Shape {
     }
 }
 
-struct HJArrowShape: Shape {
-    var direction: HJArrowDirection
+struct QLArrowShape: Shape {
+    var direction: QLArrowDirection
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -213,7 +213,7 @@ struct HJArrowShape: Shape {
     }
 }
 
-struct HJTugShape: Shape {
+struct QLTugShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let c = CGPoint(x: rect.midX, y: rect.midY)
@@ -228,7 +228,7 @@ struct HJTugShape: Shape {
     }
 }
 
-struct HJSpeakerShape: Shape {
+struct QLSpeakerShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -246,7 +246,7 @@ struct HJSpeakerShape: Shape {
     }
 }
 
-struct HJPulseShape: Shape {
+struct QLPulseShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         p.move(to: CGPoint(x: rect.minX, y: rect.midY))
@@ -259,7 +259,7 @@ struct HJPulseShape: Shape {
     }
 }
 
-struct HJBookShape: Shape {
+struct QLBookShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -280,7 +280,7 @@ struct HJBookShape: Shape {
     }
 }
 
-struct HJCloseShape: Shape {
+struct QLCloseShape: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let inset = min(rect.width, rect.height) * 0.2
@@ -292,29 +292,29 @@ struct HJCloseShape: Shape {
     }
 }
 
-struct HJStarIcon: View {
+struct QLStarIcon: View {
     var size: CGFloat
     var filled: Bool
-    var color: Color = HJTheme.gold
+    var color: Color = QLTheme.gold
     var body: some View {
         ZStack {
             if filled {
-                HJStarShape().fill(color)
+                QLStarShape().fill(color)
             } else {
-                HJStarShape().stroke(color.opacity(0.45), lineWidth: max(1.2, size * 0.06))
+                QLStarShape().stroke(color.opacity(0.45), lineWidth: max(1.2, size * 0.06))
             }
         }
         .frame(width: size, height: size)
     }
 }
 
-struct HJStarsRow: View {
+struct QLStarsRow: View {
     var stars: Int
     var size: CGFloat = 14
     var body: some View {
         HStack(spacing: size * 0.2) {
             ForEach(0..<3, id: \.self) { i in
-                HJStarIcon(size: size, filled: i < stars)
+                QLStarIcon(size: size, filled: i < stars)
             }
         }
     }

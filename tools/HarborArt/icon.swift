@@ -133,7 +133,7 @@ ctx.closePath()
 ctx.fillPath()
 
 guard let image = ctx.makeImage() else { fatalError("could not render the icon") }
-let out = URL(fileURLWithPath: "Harbor Jam/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
+let out = URL(fileURLWithPath: "Quaylock/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
 guard let dest = CGImageDestinationCreateWithURL(out as CFURL, UTType.png.identifier as CFString, 1, nil) else {
     fatalError("could not create the PNG destination")
 }

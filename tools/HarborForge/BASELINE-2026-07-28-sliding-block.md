@@ -1,4 +1,4 @@
-# Harbor Jam — measured baseline
+# Quaylock (then named Harbor Jam) — measured baseline of the replaced game
 
 Produced by `./tools/HarborForge/build.sh && ./tools/HarborForge/harborforge audit` against the
 shipped engine and generator, before any redesign work. 500 rollouts of each policy per level.

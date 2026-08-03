@@ -3,7 +3,7 @@ import Foundation
 struct ForgeShiftReport {
     var port: Int
     var shift: Int
-    var def: HJShiftDef
+    var def: QLShiftDef
     var smart: ForgeResult
     var greedy: ForgeResult
     var random: ForgeResult
@@ -28,11 +28,11 @@ func forgeAccept(port: Int, shift: Int, maxSalts: Int = 220) -> ForgeShiftReport
         // Losing two of three reputation is still a comfortable margin.
         guard !s.failed, s.counters.shipsLost <= 1 else { continue }
 
-        def.parTicks = s.endTick * HJTuning.parCushionPercent / 100
+        def.parTicks = s.endTick * QLTuning.parCushionPercent / 100
         // Re-run so the reference score is measured against the par it just set.
         let calibrated = forgeRun(def: def, upgrades: .zero, policy: .smart, seed: 1)
-        def.target3 = calibrated.score * HJTuning.target3Percent / 100
-        def.target2 = calibrated.score * HJTuning.target2Percent / 100
+        def.target3 = calibrated.score * QLTuning.target3Percent / 100
+        def.target2 = calibrated.score * QLTuning.target2Percent / 100
 
         let g = forgeRun(def: def, upgrades: .zero, policy: .greedy, seed: 2)
         let r = forgeRun(def: def, upgrades: .zero, policy: .random, seed: 3)
@@ -61,8 +61,8 @@ private func median(_ xs: [Int]) -> Double {
 func forgeGate() -> (ok: Bool, text: String, reports: [ForgeShiftReport]) {
     var reports: [ForgeShiftReport] = []
     var unbuildable: [String] = []
-    for port in 1...HJCatalog.portCount {
-        for shift in 1...HJCatalog.shiftsPerPort {
+    for port in 1...QLCatalog.portCount {
+        for shift in 1...QLCatalog.shiftsPerPort {
             if let r = forgeAccept(port: port, shift: shift) {
                 reports.append(r)
             } else {
@@ -98,7 +98,7 @@ func forgeGate() -> (ok: Bool, text: String, reports: [ForgeShiftReport]) {
 
     var clauses: [(String, Bool, String)] = []
     clauses.append(("all shifts generate", unbuildable.isEmpty,
-                    "\(reports.count)/\(HJCatalog.totalShifts)"
+                    "\(reports.count)/\(QLCatalog.totalShifts)"
                         + (unbuildable.isEmpty ? "" : " missing: " + unbuildable.joined(separator: " "))))
     clauses.append(("S clears every shift", smartClears == reports.count,
                     "\(smartClears)/\(reports.count)"))
@@ -127,7 +127,7 @@ func forgeGate() -> (ok: Bool, text: String, reports: [ForgeShiftReport]) {
     }
 
     out += "\n--- per-port detail (policy S / policy G) ---\n"
-    for port in 1...HJCatalog.portCount {
+    for port in 1...QLCatalog.portCount {
         let rs = reports.filter { $0.port == port }
         guard !rs.isEmpty else { out += "port \(port): NONE GENERATED\n"; continue }
         let s3 = rs.filter { $0.smart.stars == 3 }.count
@@ -138,6 +138,6 @@ func forgeGate() -> (ok: Bool, text: String, reports: [ForgeShiftReport]) {
                       median(rs.map { $0.smart.score }), median(rs.map { $0.greedy.score }))
     }
 
-    out += ok ? "\nGATE PASSED\n" : "\nGATE FAILED — retune HJTuning / HJCatalog.ports and run again\n"
+    out += ok ? "\nGATE PASSED\n" : "\nGATE FAILED — retune QLTuning / QLCatalog.ports and run again\n"
     return (ok, out, reports)
 }

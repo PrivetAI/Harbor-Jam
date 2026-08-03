@@ -17,25 +17,25 @@ enum SimTests {
 
     // MARK: - Fixtures
 
-    static func harbour(slots: [HJSlot], channel: Int = 10,
+    static func harbour(slots: [QLSlot], channel: Int = 10,
                         amplitude: Int = 0, step: Int = 0,
-                        roadstead: Int = 4) -> HJHarborDef {
-        HJHarborDef(slots: slots, channelTransitTicks: channel,
+                        roadstead: Int = 4) -> QLHarborDef {
+        QLHarborDef(slots: slots, channelTransitTicks: channel,
                     tideAmplitude: amplitude, tideStepTicks: step,
                     roadsteadCapacity: roadstead)
     }
 
     static func ship(id: Int = 1, length: Int = 2, draft: Int = 1,
-                     cargo: HJCargo = .container, tons: Int = 4,
-                     patience: Int = 1000, vip: Bool = false) -> HJShip {
-        HJShip(id: id, length: length, draft: draft, cargo: cargo, tons: tons,
+                     cargo: QLCargo = .container, tons: Int = 4,
+                     patience: Int = 1000, vip: Bool = false) -> QLShip {
+        QLShip(id: id, length: length, draft: draft, cargo: cargo, tons: tons,
                patienceTicks: patience, isVIP: vip)
     }
 
-    static func shift(harbor: HJHarborDef, arrivals: [HJArrival],
-                      outages: [HJSlotOutage] = [], storms: [HJStormWindow] = [],
-                      par: Int = 100_000) -> HJShiftDef {
-        HJShiftDef(port: 1, shift: 1, harbor: harbor, arrivals: arrivals,
+    static func shift(harbor: QLHarborDef, arrivals: [QLArrival],
+                      outages: [QLSlotOutage] = [], storms: [QLStormWindow] = [],
+                      par: Int = 100_000) -> QLShiftDef {
+        QLShiftDef(port: 1, shift: 1, harbor: harbor, arrivals: arrivals,
                    outages: outages, storms: storms,
                    parTicks: par, target2: 0, target3: Int.max)
     }
@@ -64,11 +64,11 @@ enum SimTests {
     // MARK: - Cases
 
     static func testBerthLegality() {
-        let quay = harbour(slots: [HJSlot(depth: 5, equipment: .crane),
-                                   HJSlot(depth: 5, equipment: .crane),
-                                   HJSlot(depth: 2, equipment: .crane)])
-        var sim = HJSim(def: shift(harbor: quay,
-                                   arrivals: [HJArrival(tick: 1, ship: ship(length: 2, draft: 3))]),
+        let quay = harbour(slots: [QLSlot(depth: 5, equipment: .crane),
+                                   QLSlot(depth: 5, equipment: .crane),
+                                   QLSlot(depth: 2, equipment: .crane)])
+        var sim = QLSim(def: shift(harbor: quay,
+                                   arrivals: [QLArrival(tick: 1, ship: ship(length: 2, draft: 3))]),
                         upgrades: .zero)
         sim.advance()
         expectEqual(sim.canBerth(shipID: 1, atSlot: 2), .tooLong, "length must fit the quay")
@@ -77,11 +77,11 @@ enum SimTests {
     }
 
     static func testChannelIsExclusive() {
-        let quay = harbour(slots: Array(repeating: HJSlot(depth: 5, equipment: .crane), count: 6),
+        let quay = harbour(slots: Array(repeating: QLSlot(depth: 5, equipment: .crane), count: 6),
                            channel: 20)
-        var sim = HJSim(def: shift(harbor: quay, arrivals: [
-            HJArrival(tick: 1, ship: ship(id: 1)),
-            HJArrival(tick: 1, ship: ship(id: 2)),
+        var sim = QLSim(def: shift(harbor: quay, arrivals: [
+            QLArrival(tick: 1, ship: ship(id: 1)),
+            QLArrival(tick: 1, ship: ship(id: 2)),
         ]), upgrades: .zero)
         sim.advance()
         expectEqual(sim.berth(shipID: 1, atSlot: 0), .none, "first ship enters")
@@ -91,9 +91,9 @@ enum SimTests {
     }
 
     static func testTideTriangleWave() {
-        let quay = harbour(slots: [HJSlot(depth: 3, equipment: .crane)],
+        let quay = harbour(slots: [QLSlot(depth: 3, equipment: .crane)],
                            amplitude: 1, step: 10)
-        let sim = HJSim(def: shift(harbor: quay, arrivals: []), upgrades: .zero)
+        let sim = QLSim(def: shift(harbor: quay, arrivals: []), upgrades: .zero)
         expectEqual(sim.tideOffset(at: 0), -1, "cycle starts at low water")
         expectEqual(sim.tideOffset(at: 10), 0, "one step up after one step of ticks")
         expectEqual(sim.tideOffset(at: 20), 1, "high water at the top of the ramp")
@@ -103,12 +103,12 @@ enum SimTests {
     }
 
     static func testGroundingHoldsTheBerth() {
-        let quay = harbour(slots: [HJSlot(depth: 3, equipment: .crane),
-                                   HJSlot(depth: 3, equipment: .crane)],
+        let quay = harbour(slots: [QLSlot(depth: 3, equipment: .crane),
+                                   QLSlot(depth: 3, equipment: .crane)],
                            channel: 1, amplitude: 1, step: 10)
         // Draft 4 over depth 3 can only enter at high water.
-        var sim = HJSim(def: shift(harbor: quay, arrivals: [
-            HJArrival(tick: 1, ship: ship(length: 2, draft: 4, tons: 1)),
+        var sim = QLSim(def: shift(harbor: quay, arrivals: [
+            QLArrival(tick: 1, ship: ship(length: 2, draft: 4, tons: 1)),
         ]), upgrades: .zero)
         while sim.tick < 20 { sim.advance() }
         expectEqual(sim.berth(shipID: 1, atSlot: 0), .none, "enters on the tide")
@@ -120,13 +120,13 @@ enum SimTests {
     }
 
     static func testMismatchedGearCostsMore() {
-        let matched = harbour(slots: [HJSlot(depth: 5, equipment: .crane),
-                                      HJSlot(depth: 5, equipment: .crane)], channel: 1)
-        let wrong = harbour(slots: [HJSlot(depth: 5, equipment: .pipeline),
-                                    HJSlot(depth: 5, equipment: .pipeline)], channel: 1)
-        func unloadTicks(_ quay: HJHarborDef) -> Int {
-            var sim = HJSim(def: shift(harbor: quay, arrivals: [
-                HJArrival(tick: 1, ship: ship(cargo: .container, tons: 4)),
+        let matched = harbour(slots: [QLSlot(depth: 5, equipment: .crane),
+                                      QLSlot(depth: 5, equipment: .crane)], channel: 1)
+        let wrong = harbour(slots: [QLSlot(depth: 5, equipment: .pipeline),
+                                    QLSlot(depth: 5, equipment: .pipeline)], channel: 1)
+        func unloadTicks(_ quay: QLHarborDef) -> Int {
+            var sim = QLSim(def: shift(harbor: quay, arrivals: [
+                QLArrival(tick: 1, ship: ship(cargo: .container, tons: 4)),
             ]), upgrades: .zero)
             sim.advance()
             _ = sim.berth(shipID: 1, atSlot: 0)
@@ -139,10 +139,10 @@ enum SimTests {
     }
 
     static func testPatienceOnlyBurnsWhileWaiting() {
-        let quay = harbour(slots: [HJSlot(depth: 5, equipment: .crane),
-                                   HJSlot(depth: 5, equipment: .crane)], channel: 40)
-        var sim = HJSim(def: shift(harbor: quay, arrivals: [
-            HJArrival(tick: 1, ship: ship(patience: 200)),
+        let quay = harbour(slots: [QLSlot(depth: 5, equipment: .crane),
+                                   QLSlot(depth: 5, equipment: .crane)], channel: 40)
+        var sim = QLSim(def: shift(harbor: quay, arrivals: [
+            QLArrival(tick: 1, ship: ship(patience: 200)),
         ]), upgrades: .zero)
         sim.advance()
         for _ in 0..<10 { sim.advance() }
@@ -154,25 +154,25 @@ enum SimTests {
     }
 
     static func testRoadsteadOverflowLosesShip() {
-        let quay = harbour(slots: [HJSlot(depth: 5, equipment: .crane),
-                                   HJSlot(depth: 5, equipment: .crane)], roadstead: 2)
-        var sim = HJSim(def: shift(harbor: quay, arrivals: [
-            HJArrival(tick: 1, ship: ship(id: 1)),
-            HJArrival(tick: 1, ship: ship(id: 2)),
-            HJArrival(tick: 1, ship: ship(id: 3)),
+        let quay = harbour(slots: [QLSlot(depth: 5, equipment: .crane),
+                                   QLSlot(depth: 5, equipment: .crane)], roadstead: 2)
+        var sim = QLSim(def: shift(harbor: quay, arrivals: [
+            QLArrival(tick: 1, ship: ship(id: 1)),
+            QLArrival(tick: 1, ship: ship(id: 2)),
+            QLArrival(tick: 1, ship: ship(id: 3)),
         ]), upgrades: .zero)
         sim.advance()
         expectEqual(sim.waitingShips.count, 2, "roadstead holds its capacity")
-        expectEqual(sim.ships.first(where: { $0.id == 3 })?.state, HJShipState.lost,
+        expectEqual(sim.ships.first(where: { $0.id == 3 })?.state, QLShipState.lost,
                     "the overflow ship is lost")
-        expectEqual(sim.reputation, HJTuning.baseReputation - 1, "and costs reputation")
+        expectEqual(sim.reputation, QLTuning.baseReputation - 1, "and costs reputation")
     }
 
     static func testSlotsFreeAtStartOfDeparture() {
-        let quay = harbour(slots: Array(repeating: HJSlot(depth: 5, equipment: .crane), count: 4),
+        let quay = harbour(slots: Array(repeating: QLSlot(depth: 5, equipment: .crane), count: 4),
                            channel: 20)
-        var sim = HJSim(def: shift(harbor: quay, arrivals: [
-            HJArrival(tick: 1, ship: ship(id: 1, tons: 1)),
+        var sim = QLSim(def: shift(harbor: quay, arrivals: [
+            QLArrival(tick: 1, ship: ship(id: 1, tons: 1)),
         ]), upgrades: .zero)
         sim.advance()
         _ = sim.berth(shipID: 1, atSlot: 0)
@@ -184,36 +184,36 @@ enum SimTests {
     }
 
     static func testUpgradesApply() {
-        let quay = harbour(slots: [HJSlot(depth: 1, equipment: .crane),
-                                   HJSlot(depth: 1, equipment: .crane)], channel: 100)
-        var plain = HJSim(def: shift(harbor: quay,
-                                     arrivals: [HJArrival(tick: 1, ship: ship(draft: 2))]),
+        let quay = harbour(slots: [QLSlot(depth: 1, equipment: .crane),
+                                   QLSlot(depth: 1, equipment: .crane)], channel: 100)
+        var plain = QLSim(def: shift(harbor: quay,
+                                     arrivals: [QLArrival(tick: 1, ship: ship(draft: 2))]),
                           upgrades: .zero)
         plain.advance()
         expectEqual(plain.canBerth(shipID: 1, atSlot: 0), .tooShallow,
                     "draft 2 over depth 1 is refused")
 
-        var dredged = HJSim(def: shift(harbor: quay,
-                                       arrivals: [HJArrival(tick: 1, ship: ship(draft: 2))]),
-                            upgrades: HJUpgradeLevels(cranes: 0, tugs: 0, dredge: 1,
+        var dredged = QLSim(def: shift(harbor: quay,
+                                       arrivals: [QLArrival(tick: 1, ship: ship(draft: 2))]),
+                            upgrades: QLUpgradeLevels(cranes: 0, tugs: 0, dredge: 1,
                                                       roadstead: 0, crew: 0))
         dredged.advance()
         expectEqual(dredged.canBerth(shipID: 1, atSlot: 0), .none,
                     "dredging one level admits it")
 
-        let crewed = HJSim(def: shift(harbor: quay, arrivals: []),
-                           upgrades: HJUpgradeLevels(cranes: 0, tugs: 0, dredge: 0,
+        let crewed = QLSim(def: shift(harbor: quay, arrivals: []),
+                           upgrades: QLUpgradeLevels(cranes: 0, tugs: 0, dredge: 0,
                                                      roadstead: 0, crew: 2))
-        expectEqual(crewed.reputation, HJTuning.baseReputation + 2,
+        expectEqual(crewed.reputation, QLTuning.baseReputation + 2,
                     "crew raises starting reputation")
     }
 
     static func testDeterminism() {
-        let quay = harbour(slots: Array(repeating: HJSlot(depth: 4, equipment: .crane), count: 6),
+        let quay = harbour(slots: Array(repeating: QLSlot(depth: 4, equipment: .crane), count: 6),
                            channel: 15, amplitude: 1, step: 12)
-        let arrivals = (1...6).map { HJArrival(tick: $0 * 7, ship: ship(id: $0, tons: 3)) }
+        let arrivals = (1...6).map { QLArrival(tick: $0 * 7, ship: ship(id: $0, tons: 3)) }
         func replay() -> [Int] {
-            var sim = HJSim(def: shift(harbor: quay, arrivals: arrivals), upgrades: .zero)
+            var sim = QLSim(def: shift(harbor: quay, arrivals: arrivals), upgrades: .zero)
             var trace: [Int] = []
             for _ in 0..<400 {
                 sim.advance()

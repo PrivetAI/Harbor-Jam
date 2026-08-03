@@ -9,8 +9,8 @@ case "test":
 
 case "generate":
     var mismatches = 0
-    for port in 1...HJCatalog.portCount {
-        for shift in 1...HJCatalog.shiftsPerPort {
+    for port in 1...QLCatalog.portCount {
+        for shift in 1...QLCatalog.shiftsPerPort {
             let a = forgeShift(port: port, shift: shift, salt: 0)
             let b = forgeShift(port: port, shift: shift, salt: 0)
             if a != b { mismatches += 1 }
@@ -18,7 +18,7 @@ case "generate":
         }
     }
     print(mismatches == 0
-          ? "GENERATE OK — \(HJCatalog.totalShifts) shifts, deterministic, all non-empty"
+          ? "GENERATE OK — \(QLCatalog.totalShifts) shifts, deterministic, all non-empty"
           : "GENERATE FAILED — \(mismatches) mismatches")
     exit(mismatches == 0 ? 0 : 1)
 
@@ -53,13 +53,13 @@ case "bake":
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys]
     let data = try! encoder.encode(reports.map { $0.def })
-    try! data.write(to: URL(fileURLWithPath: "Harbor Jam/shifts.json"))
-    print("baked \(reports.count) shifts to Harbor Jam/shifts.json (\(data.count) bytes)")
+    try! data.write(to: URL(fileURLWithPath: "Quaylock/shifts.json"))
+    print("baked \(reports.count) shifts to Quaylock/shifts.json (\(data.count) bytes)")
     exit(0)
 
 case "verify":
-    let data = try! Data(contentsOf: URL(fileURLWithPath: "Harbor Jam/shifts.json"))
-    let defs = try! JSONDecoder().decode([HJShiftDef].self, from: data)
+    let data = try! Data(contentsOf: URL(fileURLWithPath: "Quaylock/shifts.json"))
+    let defs = try! JSONDecoder().decode([QLShiftDef].self, from: data)
     var bad = 0
     for d in defs where forgeRun(def: d, upgrades: .zero, policy: .smart, seed: 1).stars < 1 {
         bad += 1

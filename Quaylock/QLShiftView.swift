@@ -1,28 +1,28 @@
 import SwiftUI
 
-struct HJShiftView: View {
-    @EnvironmentObject var store: HJStore
+struct QLShiftView: View {
+    @EnvironmentObject var store: QLStore
     @Environment(\.presentationMode) private var presentationMode
     @Environment(\.horizontalSizeClass) private var hSize
 
     let port: Int
     let shift: Int
 
-    @StateObject private var vm: HJShiftViewModel
+    @StateObject private var vm: QLShiftViewModel
     @State private var reported = false
     @State private var showPause = false
     @State private var onboardingStep = 0
 
-    init(port: Int, shift: Int, upgrades: HJUpgradeLevels) {
+    init(port: Int, shift: Int, upgrades: QLUpgradeLevels) {
         self.port = port
         self.shift = shift
-        let def = HJCatalog.shift(port: port, shift: shift) ?? HJShiftDef(
+        let def = QLCatalog.shift(port: port, shift: shift) ?? QLShiftDef(
             port: port, shift: shift,
-            harbor: HJHarborDef(slots: [], channelTransitTicks: 1, tideAmplitude: 0,
+            harbor: QLHarborDef(slots: [], channelTransitTicks: 1, tideAmplitude: 0,
                                 tideStepTicks: 0, roadsteadCapacity: 4),
             arrivals: [], outages: [], storms: [],
             parTicks: 1, target2: 0, target3: 0)
-        _vm = StateObject(wrappedValue: HJShiftViewModel(def: def, upgrades: upgrades))
+        _vm = StateObject(wrappedValue: QLShiftViewModel(def: def, upgrades: upgrades))
     }
 
     private var isOnboarding: Bool {
@@ -32,16 +32,16 @@ struct HJShiftView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                HJTheme.chartDeep.ignoresSafeArea()
+                QLTheme.chartDeep.ignoresSafeArea()
 
                 VStack(spacing: 10) {
                     hud
-                        .hjColumn(HJLayout.gameChromeColumn, hSize)
+                        .hjColumn(QLLayout.gameChromeColumn, hSize)
                     if vm.sim.def.harbor.tideAmplitude > 0 {
                         tideStrip
-                            .hjColumn(HJLayout.gameChromeColumn, hSize)
+                            .hjColumn(QLLayout.gameChromeColumn, hSize)
                     }
-                    HJHarborBoardView(vm: vm, screenSize: geo.size)
+                    QLHarborBoardView(vm: vm, screenSize: geo.size)
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 12)
@@ -71,37 +71,37 @@ struct HJShiftView: View {
     private var hud: some View {
         HStack(spacing: 14) {
             Button(action: { showPause = true; vm.pause() }) {
-                HJPauseShape()
-                    .fill(HJTheme.cyan)
+                QLPauseShape()
+                    .fill(QLTheme.cyan)
                     .frame(width: 16, height: 18)
                     .frame(width: 40, height: 40)
                     .contentShape(Rectangle())
             }
 
-            hudStat(HJSprite.iconTonnage, "\(vm.sim.counters.tonsServed)")
-            hudStat(HJSprite.iconCoin, "\(vm.sim.counters.revenue)")
+            hudStat(QLSprite.iconTonnage, "\(vm.sim.counters.tonsServed)")
+            hudStat(QLSprite.iconCoin, "\(vm.sim.counters.revenue)")
 
             Spacer()
 
             HStack(spacing: 3) {
                 ForEach(0..<max(0, vm.sim.reputation), id: \.self) { _ in
-                    HJSprite.iconReputation.image
+                    QLSprite.iconReputation.image
                         .resizable().scaledToFit().frame(width: 16, height: 16)
                 }
             }
             Text("\(vm.sim.counters.shipsServed)/\(vm.sim.totalShips)")
-                .font(HJTheme.mono(12))
-                .foregroundColor(HJTheme.cyanSoft.opacity(0.8))
+                .font(QLTheme.mono(12))
+                .foregroundColor(QLTheme.cyanSoft.opacity(0.8))
         }
         .padding(.horizontal, 4)
     }
 
-    private func hudStat(_ sprite: HJSprite, _ value: String) -> some View {
+    private func hudStat(_ sprite: QLSprite, _ value: String) -> some View {
         HStack(spacing: 4) {
             sprite.image.resizable().scaledToFit().frame(width: 16, height: 16)
             Text(value)
-                .font(HJTheme.mono(13))
-                .foregroundColor(HJTheme.cyanSoft)
+                .font(QLTheme.mono(13))
+                .foregroundColor(QLTheme.cyanSoft)
         }
     }
 
@@ -113,25 +113,25 @@ struct HJShiftView: View {
         let toTurn = vm.sim.ticksToTideTurn()
         let rising = vm.sim.tideOffset(at: vm.sim.tick + 1) >= offset
         return HStack(spacing: 8) {
-            HJSprite.iconTide.image.resizable().scaledToFit().frame(width: 16, height: 16)
+            QLSprite.iconTide.image.resizable().scaledToFit().frame(width: 16, height: 16)
             HStack(spacing: 3) {
                 ForEach(-amp...amp, id: \.self) { level in
                     Capsule()
-                        .fill(level <= offset ? HJTheme.cyan : HJTheme.chartGrid)
+                        .fill(level <= offset ? QLTheme.cyan : QLTheme.chartGrid)
                         .frame(width: 16, height: 6)
                 }
             }
-            HJArrowShape(direction: rising ? .north : .south)
-                .stroke(rising ? HJTheme.cyan : HJTheme.warn, lineWidth: 1.8)
+            QLArrowShape(direction: rising ? .north : .south)
+                .stroke(rising ? QLTheme.cyan : QLTheme.warn, lineWidth: 1.8)
                 .frame(width: 14, height: 14)
-            Text("\(toTurn / HJTuning.tickHz)s")
-                .font(HJTheme.mono(11))
-                .foregroundColor(HJTheme.cyanSoft.opacity(0.7))
+            Text("\(toTurn / QLTuning.tickHz)s")
+                .font(QLTheme.mono(11))
+                .foregroundColor(QLTheme.cyanSoft.opacity(0.7))
             Spacer()
             if vm.sim.stormActive {
                 Text("STORM")
-                    .font(HJTheme.mono(10, weight: .bold))
-                    .foregroundColor(HJTheme.alert)
+                    .font(QLTheme.mono(10, weight: .bold))
+                    .foregroundColor(QLTheme.alert)
             }
         }
         .padding(.horizontal, 4)
@@ -139,14 +139,14 @@ struct HJShiftView: View {
 
     // MARK: - Feedback
 
-    private func refusalToast(_ flash: HJRefusalFlash) -> some View {
+    private func refusalToast(_ flash: QLRefusalFlash) -> some View {
         VStack {
             Spacer()
             Text(flash.message)
-                .font(HJTheme.body(13, weight: .semibold))
-                .foregroundColor(HJTheme.chartDeep)
+                .font(QLTheme.body(13, weight: .semibold))
+                .foregroundColor(QLTheme.chartDeep)
                 .padding(.horizontal, 14).padding(.vertical, 8)
-                .background(Capsule().fill(HJTheme.warn))
+                .background(Capsule().fill(QLTheme.warn))
                 .padding(.bottom, 190)
         }
         .allowsHitTesting(false)
@@ -166,7 +166,7 @@ struct HJShiftView: View {
     private var completeOverlay: some View {
         overlayCard(title: "Shift complete") {
             VStack(spacing: 12) {
-                HJStarsRow(stars: vm.stars, size: 26)
+                QLStarsRow(stars: vm.stars, size: 26)
                 statLine("Score", "\(vm.score)")
                 statLine("Two stars at", "\(vm.sim.def.target2)")
                 statLine("Three stars at", "\(vm.sim.def.target3)")
@@ -188,8 +188,8 @@ struct HJShiftView: View {
         overlayCard(title: "Harbour jammed") {
             VStack(spacing: 12) {
                 Text("Reputation ran out — too many ships turned away.")
-                    .font(HJTheme.body(13))
-                    .foregroundColor(HJTheme.cyanSoft.opacity(0.8))
+                    .font(QLTheme.body(13))
+                    .foregroundColor(QLTheme.cyanSoft.opacity(0.8))
                     .multilineTextAlignment(.center)
                 statLine("Tons moved", "\(vm.sim.counters.tonsServed)")
                 statLine("Turned away", "\(vm.sim.counters.shipsLost)")
@@ -209,16 +209,16 @@ struct HJShiftView: View {
             Spacer()
             VStack(spacing: 8) {
                 Text(steps[min(onboardingStep, steps.count - 1)])
-                    .font(HJTheme.body(13))
-                    .foregroundColor(HJTheme.cyanSoft)
+                    .font(QLTheme.body(13))
+                    .foregroundColor(QLTheme.cyanSoft)
                     .multilineTextAlignment(.center)
                 HStack(spacing: 12) {
                     Button("Skip") {
                         store.save.onboardingSeen = true
                         store.persist()
                     }
-                    .font(HJTheme.body(12))
-                    .foregroundColor(HJTheme.cyanSoft.opacity(0.6))
+                    .font(QLTheme.body(12))
+                    .foregroundColor(QLTheme.cyanSoft.opacity(0.6))
                     Button(onboardingStep >= steps.count - 1 ? "Got it" : "Next") {
                         if onboardingStep >= steps.count - 1 {
                             store.save.onboardingSeen = true
@@ -227,13 +227,13 @@ struct HJShiftView: View {
                             onboardingStep += 1
                         }
                     }
-                    .font(HJTheme.body(12, weight: .semibold))
-                    .foregroundColor(HJTheme.gold)
+                    .font(QLTheme.body(12, weight: .semibold))
+                    .foregroundColor(QLTheme.gold)
                 }
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: 14).fill(HJTheme.cardBG))
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(HJTheme.contour, lineWidth: 1))
+            .background(RoundedRectangle(cornerRadius: 14).fill(QLTheme.cardBG))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(QLTheme.contour, lineWidth: 1))
             .padding(.horizontal, 24)
             .padding(.bottom, 104)
         }
@@ -245,14 +245,14 @@ struct HJShiftView: View {
             Color.black.opacity(0.72).ignoresSafeArea()
             VStack(spacing: 14) {
                 Text(title)
-                    .font(HJTheme.display(22))
-                    .foregroundColor(HJTheme.cyanSoft)
+                    .font(QLTheme.display(22))
+                    .foregroundColor(QLTheme.cyanSoft)
                 content()
             }
             .padding(22)
-            .background(RoundedRectangle(cornerRadius: 18).fill(HJTheme.cardBG))
-            .overlay(RoundedRectangle(cornerRadius: 18).stroke(HJTheme.contour, lineWidth: 1))
-            .hjCap(HJLayout.overlayColumn, hSize)
+            .background(RoundedRectangle(cornerRadius: 18).fill(QLTheme.cardBG))
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(QLTheme.contour, lineWidth: 1))
+            .hjCap(QLLayout.overlayColumn, hSize)
             .padding(.horizontal, 28)
         }
     }
@@ -260,12 +260,12 @@ struct HJShiftView: View {
     private func statLine(_ label: String, _ value: String) -> some View {
         HStack {
             Text(label)
-                .font(HJTheme.body(13))
-                .foregroundColor(HJTheme.cyanSoft.opacity(0.7))
+                .font(QLTheme.body(13))
+                .foregroundColor(QLTheme.cyanSoft.opacity(0.7))
             Spacer()
             Text(value)
-                .font(HJTheme.mono(13))
-                .foregroundColor(HJTheme.cyanSoft)
+                .font(QLTheme.mono(13))
+                .foregroundColor(QLTheme.cyanSoft)
         }
         .frame(minWidth: 200)
     }
@@ -273,11 +273,11 @@ struct HJShiftView: View {
     private func overlayButton(_ title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(HJTheme.body(14, weight: .semibold))
-                .foregroundColor(HJTheme.chartDeep)
+                .font(QLTheme.body(14, weight: .semibold))
+                .foregroundColor(QLTheme.chartDeep)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
-                .background(RoundedRectangle(cornerRadius: 11).fill(HJTheme.cyan))
+                .background(RoundedRectangle(cornerRadius: 11).fill(QLTheme.cyan))
                 .contentShape(Rectangle())
         }
     }

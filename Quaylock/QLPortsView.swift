@@ -1,23 +1,23 @@
 import SwiftUI
 
-struct HJPortsView: View {
-    @EnvironmentObject var store: HJStore
+struct QLPortsView: View {
+    @EnvironmentObject var store: QLStore
     @Environment(\.horizontalSizeClass) private var hSize
 
     var body: some View {
         ZStack {
-            HJTheme.chartDeep.ignoresSafeArea()
+            QLTheme.chartDeep.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 14) {
                     header
                     shipyardBar
-                    ForEach(HJCatalog.ports, id: \.index) { port in
+                    ForEach(QLCatalog.ports, id: \.index) { port in
                         portCard(port)
                     }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 112)
-                .hjColumn(HJLayout.harborColumn, hSize)
+                .hjColumn(QLLayout.harborColumn, hSize)
             }
         }
         .navigationBarHidden(true)
@@ -26,55 +26,55 @@ struct HJPortsView: View {
     private var header: some View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Harbor Jam")
-                    .font(HJTheme.display(30))
-                    .foregroundColor(HJTheme.cyanSoft)
+                Text("Quaylock")
+                    .font(QLTheme.display(30))
+                    .foregroundColor(QLTheme.cyanSoft)
                 Text("Berth them, work them, get them out")
-                    .font(HJTheme.body(13))
-                    .foregroundColor(HJTheme.inkSoft)
+                    .font(QLTheme.body(13))
+                    .foregroundColor(QLTheme.inkSoft)
             }
             Spacer()
             VStack(spacing: 2) {
-                HJStarIcon(size: 20, filled: true)
+                QLStarIcon(size: 20, filled: true)
                 Text("\(store.totalStars())")
-                    .font(HJTheme.mono(15))
-                    .foregroundColor(HJTheme.cyanSoft)
+                    .font(QLTheme.mono(15))
+                    .foregroundColor(QLTheme.cyanSoft)
             }
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 12).fill(HJTheme.cardBG))
+            .background(RoundedRectangle(cornerRadius: 12).fill(QLTheme.cardBG))
         }
         .padding(.top, 10)
     }
 
     private var shipyardBar: some View {
-        NavigationLink(destination: HJShipyardView()) {
+        NavigationLink(destination: QLShipyardView()) {
             HStack {
-                HJSprite.iconCoin.image
+                QLSprite.iconCoin.image
                     .resizable().scaledToFit().frame(width: 20, height: 20)
                 Text("\(store.save.coins)")
-                    .font(HJTheme.mono(15))
-                    .foregroundColor(HJTheme.gold)
+                    .font(QLTheme.mono(15))
+                    .foregroundColor(QLTheme.gold)
                 Spacer()
                 Text("Shipyard")
-                    .font(HJTheme.body(14, weight: .semibold))
-                    .foregroundColor(HJTheme.cyanSoft)
-                HJChevronShape()
-                    .stroke(HJTheme.cyan, lineWidth: 2)
+                    .font(QLTheme.body(14, weight: .semibold))
+                    .foregroundColor(QLTheme.cyanSoft)
+                QLChevronShape()
+                    .stroke(QLTheme.cyan, lineWidth: 2)
                     .frame(width: 8, height: 13)
             }
             .padding(14)
-            .background(RoundedRectangle(cornerRadius: 14).fill(HJTheme.cardBG))
+            .background(RoundedRectangle(cornerRadius: 14).fill(QLTheme.cardBG))
             .contentShape(Rectangle())
         }
     }
 
-    private func portCard(_ port: HJPortTemplate) -> some View {
+    private func portCard(_ port: QLPortTemplate) -> some View {
         let unlocked = store.isPortUnlocked(port.index)
         let stars = store.portStars(port.index)
-        let maxStars = HJCatalog.shiftsPerPort * 3
+        let maxStars = QLCatalog.shiftsPerPort * 3
         return Group {
             if unlocked {
-                NavigationLink(destination: HJShiftGridView(port: port)) {
+                NavigationLink(destination: QLShiftGridView(port: port)) {
                     portCardBody(port, unlocked: true, stars: stars, maxStars: maxStars)
                 }
             } else {
@@ -83,35 +83,35 @@ struct HJPortsView: View {
         }
     }
 
-    private func portCardBody(_ port: HJPortTemplate, unlocked: Bool,
+    private func portCardBody(_ port: QLPortTemplate, unlocked: Bool,
                               stars: Int, maxStars: Int) -> some View {
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(unlocked ? HJTheme.hullFill : HJTheme.chartGrid)
+                    .fill(unlocked ? QLTheme.hullFill : QLTheme.chartGrid)
                     .frame(width: 54, height: 54)
                 if unlocked {
-                    HJWaveShape()
-                        .stroke(HJTheme.cyan, style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
+                    QLWaveShape()
+                        .stroke(QLTheme.cyan, style: StrokeStyle(lineWidth: 2.4, lineCap: .round))
                         .frame(width: 28, height: 18)
                 } else {
-                    HJLockShape()
-                        .stroke(HJTheme.inkSoft, lineWidth: 2)
+                    QLLockShape()
+                        .stroke(QLTheme.inkSoft, lineWidth: 2)
                         .frame(width: 20, height: 22)
                 }
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(port.name)
-                    .font(HJTheme.display(18))
-                    .foregroundColor(unlocked ? HJTheme.cyanSoft : HJTheme.inkSoft)
+                    .font(QLTheme.display(18))
+                    .foregroundColor(unlocked ? QLTheme.cyanSoft : QLTheme.inkSoft)
                 Text(unlocked ? port.tagline
-                              : "Unlocks at \(HJCatalog.starsToUnlock(port: port.index)) stars")
-                    .font(HJTheme.body(12))
-                    .foregroundColor(HJTheme.inkSoft)
+                              : "Unlocks at \(QLCatalog.starsToUnlock(port: port.index)) stars")
+                    .font(QLTheme.body(12))
+                    .foregroundColor(QLTheme.inkSoft)
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        Capsule().fill(HJTheme.chartGrid).frame(height: 4)
-                        Capsule().fill(HJTheme.gold)
+                        Capsule().fill(QLTheme.chartGrid).frame(height: 4)
+                        Capsule().fill(QLTheme.gold)
                             .frame(width: geo.size.width * CGFloat(stars) / CGFloat(maxStars), height: 4)
                     }
                 }
@@ -119,48 +119,48 @@ struct HJPortsView: View {
             }
             VStack(spacing: 3) {
                 Text("\(stars)/\(maxStars)")
-                    .font(HJTheme.mono(12))
-                    .foregroundColor(HJTheme.cyanSoft)
-                HJStarIcon(size: 14, filled: stars > 0)
+                    .font(QLTheme.mono(12))
+                    .foregroundColor(QLTheme.cyanSoft)
+                QLStarIcon(size: 14, filled: stars > 0)
             }
         }
         .padding(14)
-        .background(RoundedRectangle(cornerRadius: 14).fill(HJTheme.cardBG))
+        .background(RoundedRectangle(cornerRadius: 14).fill(QLTheme.cardBG))
         .contentShape(Rectangle())
     }
 }
 
-struct HJShiftGridView: View {
-    @EnvironmentObject var store: HJStore
+struct QLShiftGridView: View {
+    @EnvironmentObject var store: QLStore
     @Environment(\.horizontalSizeClass) private var hSize
-    let port: HJPortTemplate
+    let port: QLPortTemplate
 
     private let columns = [GridItem(.adaptive(minimum: 74), spacing: 12)]
 
     var body: some View {
         ZStack {
-            HJTheme.chartDeep.ignoresSafeArea()
+            QLTheme.chartDeep.ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(port.name)
-                            .font(HJTheme.display(24))
-                            .foregroundColor(HJTheme.cyanSoft)
+                            .font(QLTheme.display(24))
+                            .foregroundColor(QLTheme.cyanSoft)
                         Text(port.tagline)
-                            .font(HJTheme.body(13))
-                            .foregroundColor(HJTheme.inkSoft)
+                            .font(QLTheme.body(13))
+                            .foregroundColor(QLTheme.inkSoft)
                     }
                     .padding(.top, 8)
 
                     LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(1...HJCatalog.shiftsPerPort, id: \.self) { shift in
+                        ForEach(1...QLCatalog.shiftsPerPort, id: \.self) { shift in
                             shiftTile(shift)
                         }
                     }
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 112)
-                .hjColumn(HJLayout.levelGridColumn, hSize)
+                .hjColumn(QLLayout.levelGridColumn, hSize)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -171,7 +171,7 @@ struct HJShiftGridView: View {
         let record = store.record(port: port.index, shift: shift)
         return Group {
             if unlocked {
-                NavigationLink(destination: HJShiftView(port: port.index, shift: shift,
+                NavigationLink(destination: QLShiftView(port: port.index, shift: shift,
                                                         upgrades: store.upgradeLevels())) {
                     tileBody(shift, unlocked: true, stars: record?.stars ?? 0)
                 }
@@ -185,21 +185,21 @@ struct HJShiftGridView: View {
         VStack(spacing: 5) {
             if unlocked {
                 Text("\(shift)")
-                    .font(HJTheme.display(20))
-                    .foregroundColor(HJTheme.cyanSoft)
+                    .font(QLTheme.display(20))
+                    .foregroundColor(QLTheme.cyanSoft)
             } else {
-                HJLockShape()
-                    .stroke(HJTheme.inkSoft, lineWidth: 2)
+                QLLockShape()
+                    .stroke(QLTheme.inkSoft, lineWidth: 2)
                     .frame(width: 16, height: 18)
             }
-            HJStarsRow(stars: stars, size: 10)
+            QLStarsRow(stars: stars, size: 10)
         }
         .frame(height: 64)
         .frame(maxWidth: .infinity)
         .background(RoundedRectangle(cornerRadius: 12)
-            .fill(unlocked ? HJTheme.cardBG : HJTheme.chartGrid.opacity(0.5)))
+            .fill(unlocked ? QLTheme.cardBG : QLTheme.chartGrid.opacity(0.5)))
         .overlay(RoundedRectangle(cornerRadius: 12)
-            .stroke(stars == 3 ? HJTheme.gold : Color.clear, lineWidth: 1.5))
+            .stroke(stars == 3 ? QLTheme.gold : Color.clear, lineWidth: 1.5))
         .contentShape(Rectangle())
     }
 }

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct HJShiftRecord: Codable, Equatable {
+struct QLShiftRecord: Codable, Equatable {
     var stars: Int
     var bestScore: Int
 
@@ -18,7 +18,7 @@ struct HJShiftRecord: Codable, Equatable {
 
 /// Upgrade lines. `rawValue` is the persisted dictionary key — renaming a case
 /// after release silently resets that line for everyone who has it.
-enum HJUpgradeLine: String, CaseIterable, Identifiable {
+enum QLUpgradeLine: String, CaseIterable, Identifiable {
     case cranes, tugs, dredge, roadstead, crew
     var id: String { rawValue }
 
@@ -53,7 +53,7 @@ enum HJUpgradeLine: String, CaseIterable, Identifiable {
     func cost(atLevel level: Int) -> Int { 400 * (level + 1) * (level + 1) }
 }
 
-struct HJStats: Codable, Equatable {
+struct QLStats: Codable, Equatable {
     var shiftsCleared = 0
     var tonsServed = 0
     var shipsServed = 0
@@ -79,13 +79,13 @@ struct HJStats: Codable, Equatable {
     }
 }
 
-struct HJSaveState: Codable, Equatable {
-    var shiftRecords: [String: HJShiftRecord] = [:]   // "port-shift"
+struct QLSaveState: Codable, Equatable {
+    var shiftRecords: [String: QLShiftRecord] = [:]   // "port-shift"
     var coins = 0
     var upgrades: [String: Int] = [:]
     var watchBestTons = 0
     var unlockedAchievements: [String] = []
-    var stats = HJStats()
+    var stats = QLStats()
     var soundOn = true
     var hapticsOn = true
     var onboardingSeen = false
@@ -94,121 +94,121 @@ struct HJSaveState: Codable, Equatable {
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        shiftRecords = try c.decodeIfPresent([String: HJShiftRecord].self, forKey: .shiftRecords) ?? [:]
+        shiftRecords = try c.decodeIfPresent([String: QLShiftRecord].self, forKey: .shiftRecords) ?? [:]
         coins = try c.decodeIfPresent(Int.self, forKey: .coins) ?? 0
         unlockedAchievements = try c.decodeIfPresent([String].self, forKey: .unlockedAchievements) ?? []
         upgrades = try c.decodeIfPresent([String: Int].self, forKey: .upgrades) ?? [:]
         watchBestTons = try c.decodeIfPresent(Int.self, forKey: .watchBestTons) ?? 0
-        stats = try c.decodeIfPresent(HJStats.self, forKey: .stats) ?? HJStats()
+        stats = try c.decodeIfPresent(QLStats.self, forKey: .stats) ?? QLStats()
         soundOn = try c.decodeIfPresent(Bool.self, forKey: .soundOn) ?? true
         hapticsOn = try c.decodeIfPresent(Bool.self, forKey: .hapticsOn) ?? true
         onboardingSeen = try c.decodeIfPresent(Bool.self, forKey: .onboardingSeen) ?? false
     }
 }
 
-struct HJAchievement: Identifiable {
+struct QLAchievement: Identifiable {
     var id: String
     var title: String
     var detail: String
-    var check: (HJSaveState) -> Bool
+    var check: (QLSaveState) -> Bool
 }
 
-enum HJAchievements {
-    static func totalStars(_ save: HJSaveState) -> Int {
+enum QLAchievements {
+    static func totalStars(_ save: QLSaveState) -> Int {
         save.shiftRecords.values.reduce(0) { $0 + $1.stars }
     }
 
-    static func portStars(_ save: HJSaveState, port: Int) -> Int {
-        (1...HJCatalog.shiftsPerPort).reduce(0) {
+    static func portStars(_ save: QLSaveState, port: Int) -> Int {
+        (1...QLCatalog.shiftsPerPort).reduce(0) {
             $0 + (save.shiftRecords["\(port)-\($1)"]?.stars ?? 0)
         }
     }
 
-    static let all: [HJAchievement] = [
-        HJAchievement(id: "first_shift", title: "First Watch",
+    static let all: [QLAchievement] = [
+        QLAchievement(id: "first_shift", title: "First Watch",
                       detail: "Clear your first shift") { $0.stats.shiftsCleared >= 1 },
-        HJAchievement(id: "shifts_10", title: "Harbourmaster's Nod",
+        QLAchievement(id: "shifts_10", title: "Harbourmaster's Nod",
                       detail: "Clear 10 shifts") { $0.stats.shiftsCleared >= 10 },
-        HJAchievement(id: "shifts_40", title: "Old Hand",
+        QLAchievement(id: "shifts_40", title: "Old Hand",
                       detail: "Clear 40 shifts") { $0.stats.shiftsCleared >= 40 },
-        HJAchievement(id: "shifts_84", title: "Every Berth Worked",
+        QLAchievement(id: "shifts_84", title: "Every Berth Worked",
                       detail: "Clear all 84 shifts") { save in
-            (1...HJCatalog.portCount).allSatisfy { p in
-                (1...HJCatalog.shiftsPerPort).allSatisfy {
+            (1...QLCatalog.portCount).allSatisfy { p in
+                (1...QLCatalog.shiftsPerPort).allSatisfy {
                     (save.shiftRecords["\(p)-\($0)"]?.stars ?? 0) >= 1
                 }
             }
         },
-        HJAchievement(id: "tons_1k", title: "First Thousand",
+        QLAchievement(id: "tons_1k", title: "First Thousand",
                       detail: "Move 1,000 tons") { $0.stats.tonsServed >= 1_000 },
-        HJAchievement(id: "tons_25k", title: "Deep Water Trade",
+        QLAchievement(id: "tons_25k", title: "Deep Water Trade",
                       detail: "Move 25,000 tons") { $0.stats.tonsServed >= 25_000 },
-        HJAchievement(id: "tons_200k", title: "Port of Record",
+        QLAchievement(id: "tons_200k", title: "Port of Record",
                       detail: "Move 200,000 tons") { $0.stats.tonsServed >= 200_000 },
-        HJAchievement(id: "stars_25", title: "Gold on the Water",
+        QLAchievement(id: "stars_25", title: "Gold on the Water",
                       detail: "Collect 25 stars") { totalStars($0) >= 25 },
-        HJAchievement(id: "stars_80", title: "Star Charter",
+        QLAchievement(id: "stars_80", title: "Star Charter",
                       detail: "Collect 80 stars") { totalStars($0) >= 80 },
-        HJAchievement(id: "stars_150", title: "Constellation Pilot",
+        QLAchievement(id: "stars_150", title: "Constellation Pilot",
                       detail: "Collect 150 stars") { totalStars($0) >= 150 },
-        HJAchievement(id: "port1_perfect", title: "Cove Perfectionist",
+        QLAchievement(id: "port1_perfect", title: "Cove Perfectionist",
                       detail: "All 36 stars in Quiet Cove") { portStars($0, port: 1) >= 36 },
-        HJAchievement(id: "port2_perfect", title: "Reads the Water",
+        QLAchievement(id: "port2_perfect", title: "Reads the Water",
                       detail: "All 36 stars in Tidewater Quay") { portStars($0, port: 2) >= 36 },
-        HJAchievement(id: "port3_perfect", title: "Channel Discipline",
+        QLAchievement(id: "port3_perfect", title: "Channel Discipline",
                       detail: "All 36 stars in Narrow Channel") { portStars($0, port: 3) >= 36 },
-        HJAchievement(id: "flawless_10", title: "Nobody Turned Away",
+        QLAchievement(id: "flawless_10", title: "Nobody Turned Away",
                       detail: "Clear 10 shifts without losing a ship") { $0.stats.flawlessShifts >= 10 },
-        HJAchievement(id: "nogrounding_20", title: "Never Touched Bottom",
+        QLAchievement(id: "nogrounding_20", title: "Never Touched Bottom",
                       detail: "Clear 20 shifts without a grounding") { $0.stats.noGroundingShifts >= 20 },
-        HJAchievement(id: "ships_250", title: "Two Fifty Alongside",
+        QLAchievement(id: "ships_250", title: "Two Fifty Alongside",
                       detail: "Berth and clear 250 ships") { $0.stats.shipsServed >= 250 },
-        HJAchievement(id: "upgrades_max", title: "Fully Fitted",
+        QLAchievement(id: "upgrades_max", title: "Fully Fitted",
                       detail: "Max out every upgrade line") { save in
-            HJUpgradeLine.allCases.allSatisfy { (save.upgrades[$0.rawValue] ?? 0) >= $0.maxLevel }
+            QLUpgradeLine.allCases.allSatisfy { (save.upgrades[$0.rawValue] ?? 0) >= $0.maxLevel }
         },
-        HJAchievement(id: "watch_500", title: "Standing Watch",
+        QLAchievement(id: "watch_500", title: "Standing Watch",
                       detail: "Move 500 tons in one Watch run") { $0.watchBestTons >= 500 },
-        HJAchievement(id: "watch_2000", title: "Long Watch",
+        QLAchievement(id: "watch_2000", title: "Long Watch",
                       detail: "Move 2,000 tons in one Watch run") { $0.watchBestTons >= 2_000 },
-        HJAchievement(id: "all_ports", title: "Seven Harbours",
-                      detail: "Unlock every port") { totalStars($0) >= HJCatalog.starsToUnlock(port: HJCatalog.portCount) },
+        QLAchievement(id: "all_ports", title: "Seven Harbours",
+                      detail: "Unlock every port") { totalStars($0) >= QLCatalog.starsToUnlock(port: QLCatalog.portCount) },
     ]
 }
 
-final class HJStore: ObservableObject {
+final class QLStore: ObservableObject {
     /// v3: the dispatcher. v1 was the sliding-block game and is not migrated —
     /// `par` meant something else, so every star earned under it is meaningless.
     /// The app was never released, so nothing real is lost.
-    static let saveKey = "hbj.state.v3"
+    static let saveKey = "ql.state.v1"
 
-    @Published var save: HJSaveState
+    @Published var save: QLSaveState
     @Published var recentlyUnlocked: [String] = []
 
     init() {
-        if let data = UserDefaults.standard.data(forKey: HJStore.saveKey),
-           let decoded = try? JSONDecoder().decode(HJSaveState.self, from: data) {
+        if let data = UserDefaults.standard.data(forKey: QLStore.saveKey),
+           let decoded = try? JSONDecoder().decode(QLSaveState.self, from: data) {
             save = decoded
         } else {
-            save = HJSaveState()
+            save = QLSaveState()
         }
     }
 
     func persist() {
         if let data = try? JSONEncoder().encode(save) {
-            UserDefaults.standard.set(data, forKey: HJStore.saveKey)
+            UserDefaults.standard.set(data, forKey: QLStore.saveKey)
         }
     }
 
     func resetProgress() {
-        UserDefaults.standard.removeObject(forKey: HJStore.saveKey)
-        save = HJSaveState()
+        UserDefaults.standard.removeObject(forKey: QLStore.saveKey)
+        save = QLSaveState()
         recentlyUnlocked = []
         persist()
     }
 
     func refreshAchievements() {
-        for a in HJAchievements.all where !save.unlockedAchievements.contains(a.id) {
+        for a in QLAchievements.all where !save.unlockedAchievements.contains(a.id) {
             if a.check(save) {
                 save.unlockedAchievements.append(a.id)
                 recentlyUnlocked.append(a.id)
@@ -218,10 +218,10 @@ final class HJStore: ObservableObject {
 
     // MARK: - Upgrades
 
-    func upgradeLevel(_ line: HJUpgradeLine) -> Int { save.upgrades[line.rawValue] ?? 0 }
+    func upgradeLevel(_ line: QLUpgradeLine) -> Int { save.upgrades[line.rawValue] ?? 0 }
 
-    func upgradeLevels() -> HJUpgradeLevels {
-        HJUpgradeLevels(cranes: upgradeLevel(.cranes),
+    func upgradeLevels() -> QLUpgradeLevels {
+        QLUpgradeLevels(cranes: upgradeLevel(.cranes),
                         tugs: upgradeLevel(.tugs),
                         dredge: upgradeLevel(.dredge),
                         roadstead: upgradeLevel(.roadstead),
@@ -229,7 +229,7 @@ final class HJStore: ObservableObject {
     }
 
     @discardableResult
-    func buyUpgrade(_ line: HJUpgradeLine) -> Bool {
+    func buyUpgrade(_ line: QLUpgradeLine) -> Bool {
         let level = upgradeLevel(line)
         guard level < line.maxLevel else { return false }
         let cost = line.cost(atLevel: level)
@@ -243,14 +243,14 @@ final class HJStore: ObservableObject {
 
     // MARK: - Progression
 
-    func record(port: Int, shift: Int) -> HJShiftRecord? { save.shiftRecords["\(port)-\(shift)"] }
+    func record(port: Int, shift: Int) -> QLShiftRecord? { save.shiftRecords["\(port)-\(shift)"] }
 
-    func totalStars() -> Int { HJAchievements.totalStars(save) }
+    func totalStars() -> Int { QLAchievements.totalStars(save) }
 
-    func portStars(_ port: Int) -> Int { HJAchievements.portStars(save, port: port) }
+    func portStars(_ port: Int) -> Int { QLAchievements.portStars(save, port: port) }
 
     func isPortUnlocked(_ port: Int) -> Bool {
-        totalStars() >= HJCatalog.starsToUnlock(port: port)
+        totalStars() >= QLCatalog.starsToUnlock(port: port)
     }
 
     func isShiftUnlocked(port: Int, shift: Int) -> Bool {
@@ -263,10 +263,10 @@ final class HJStore: ObservableObject {
     /// every time; the record itself only ever improves.
     @discardableResult
     func reportShiftWin(port: Int, shift: Int, score: Int, stars: Int,
-                        counters: HJSimCounters) -> Int {
+                        counters: QLSimCounters) -> Int {
         let key = "\(port)-\(shift)"
         let old = save.shiftRecords[key]
-        save.shiftRecords[key] = HJShiftRecord(stars: max(stars, old?.stars ?? 0),
+        save.shiftRecords[key] = QLShiftRecord(stars: max(stars, old?.stars ?? 0),
                                                bestScore: max(score, old?.bestScore ?? 0))
         save.coins += counters.revenue
         save.stats.shiftsCleared += 1

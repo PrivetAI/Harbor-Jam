@@ -4,9 +4,9 @@ import Combine
 /// Why a berth command bounced, and where. The board flashes the reason on the
 /// berth the finger was over — one generic shake for every refusal is what made
 /// the previous version of this game feel arbitrary rather than difficult.
-struct HJRefusalFlash: Equatable {
+struct QLRefusalFlash: Equatable {
     var slot: Int
-    var reason: HJBerthRefusal
+    var reason: QLBerthRefusal
     var stamp: Int
 
     var message: String {
@@ -26,15 +26,15 @@ struct HJRefusalFlash: Equatable {
 /// The sim never reads wall-clock time — it advances one integer tick per timer
 /// fire — so pausing is exact, and the offline harness measures the same rules
 /// the player is playing.
-final class HJShiftViewModel: ObservableObject {
-    @Published private(set) var sim: HJSim
+final class QLShiftViewModel: ObservableObject {
+    @Published private(set) var sim: QLSim
     @Published private(set) var isRunning = false
-    @Published var lastRefusal: HJRefusalFlash? = nil
+    @Published var lastRefusal: QLRefusalFlash? = nil
 
     private var timer: AnyCancellable?
 
-    init(def: HJShiftDef, upgrades: HJUpgradeLevels) {
-        sim = HJSim(def: def, upgrades: upgrades)
+    init(def: QLShiftDef, upgrades: QLUpgradeLevels) {
+        sim = QLSim(def: def, upgrades: upgrades)
     }
 
     deinit { timer?.cancel() }
@@ -42,7 +42,7 @@ final class HJShiftViewModel: ObservableObject {
     func start() {
         guard timer == nil else { return }
         isRunning = true
-        timer = Timer.publish(every: 1.0 / Double(HJTuning.tickHz), on: .main, in: .common)
+        timer = Timer.publish(every: 1.0 / Double(QLTuning.tickHz), on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in self?.step() }
     }
@@ -64,17 +64,17 @@ final class HJShiftViewModel: ObservableObject {
         }
         sim.advance()
         // Clear a refusal flash after roughly a second of ticks.
-        if let flash = lastRefusal, sim.tick - flash.stamp > HJTuning.tickHz {
+        if let flash = lastRefusal, sim.tick - flash.stamp > QLTuning.tickHz {
             lastRefusal = nil
         }
         if sim.isOver { stop() }
     }
 
     @discardableResult
-    func tryBerth(shipID: Int, atSlot slot: Int) -> HJBerthRefusal {
+    func tryBerth(shipID: Int, atSlot slot: Int) -> QLBerthRefusal {
         let refusal = sim.berth(shipID: shipID, atSlot: slot)
         if refusal != .none {
-            lastRefusal = HJRefusalFlash(slot: slot, reason: refusal, stamp: sim.tick)
+            lastRefusal = QLRefusalFlash(slot: slot, reason: refusal, stamp: sim.tick)
         }
         return refusal
     }
@@ -83,9 +83,9 @@ final class HJShiftViewModel: ObservableObject {
     func send(shipID: Int) -> Bool { sim.depart(shipID: shipID) }
 
     /// Watch mode only: hands the run its per-wave upgrade.
-    func applyUpgrades(_ levels: HJUpgradeLevels) { sim.applyUpgrades(levels) }
+    func applyUpgrades(_ levels: QLUpgradeLevels) { sim.applyUpgrades(levels) }
 
-    func canBerth(shipID: Int, atSlot slot: Int) -> HJBerthRefusal {
+    func canBerth(shipID: Int, atSlot slot: Int) -> QLBerthRefusal {
         sim.canBerth(shipID: shipID, atSlot: slot)
     }
 

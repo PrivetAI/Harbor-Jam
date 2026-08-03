@@ -7,16 +7,16 @@ struct ForgeResult {
     var stars: Int
     var failed: Bool
     var endTick: Int
-    var counters: HJSimCounters
+    var counters: QLSimCounters
 }
 
 /// A shift that has not finished by here is stalled, not hard. The gate treats
 /// hitting this cap as a bug to fix rather than a measurement.
 let forgeTickCap = 20_000
 
-func forgeRun(def: HJShiftDef, upgrades: HJUpgradeLevels,
+func forgeRun(def: QLShiftDef, upgrades: QLUpgradeLevels,
               policy: ForgePolicy, seed: UInt64) -> ForgeResult {
-    var sim = HJSim(def: def, upgrades: upgrades)
+    var sim = QLSim(def: def, upgrades: upgrades)
     var rng = ForgeRNG(seed: seed)
     var guardTicks = 0
 
@@ -30,7 +30,7 @@ func forgeRun(def: HJShiftDef, upgrades: HJUpgradeLevels,
                        endTick: guardTicks, counters: sim.counters)
 }
 
-private func applyDepartures(_ sim: inout HJSim, policy: ForgePolicy) {
+private func applyDepartures(_ sim: inout QLSim, policy: ForgePolicy) {
     guard !sim.channelBusy else { return }
     guard let first = sim.ships.first(where: { $0.state == .berthed && $0.unloadLeft <= 0 })
     else { return }
@@ -49,7 +49,7 @@ private func applyDepartures(_ sim: inout HJSim, policy: ForgePolicy) {
     }
 }
 
-private func hasLegalBerth(sim: HJSim, ship: HJShip) -> Bool {
+private func hasLegalBerth(sim: QLSim, ship: QLShip) -> Bool {
     let quay = sim.def.harbor.slots.count
     guard ship.length <= quay else { return false }
     for slot in 0...(quay - ship.length) where sim.canBerth(shipID: ship.id, atSlot: slot) == .none {
@@ -58,7 +58,7 @@ private func hasLegalBerth(sim: HJSim, ship: HJShip) -> Bool {
     return false
 }
 
-private func applyBerthing(_ sim: inout HJSim, policy: ForgePolicy, rng: inout ForgeRNG) {
+private func applyBerthing(_ sim: inout QLSim, policy: ForgePolicy, rng: inout ForgeRNG) {
     guard !sim.channelBusy else { return }
     let quay = sim.def.harbor.slots.count
 
@@ -125,9 +125,9 @@ private func gapWaste(slot: Int, length: Int, quay: Int, taken: Set<Int>) -> Int
 
 /// Will the water under this berth fall below the hull's draft before she can
 /// finish unloading and get back out through the channel?
-private func wouldGround(sim: HJSim, ship: HJShip, slot: Int) -> Bool {
+private func wouldGround(sim: QLSim, ship: QLShip, slot: Int) -> Bool {
     guard sim.def.harbor.tideAmplitude > 0, sim.def.harbor.tideStepTicks > 0 else { return false }
-    let work = ship.tons * HJTuning.workPerTon(ship.cargo) * 5 / 2
+    let work = ship.tons * QLTuning.workPerTon(ship.cargo) * 5 / 2
     let horizon = sim.tick + work / 2 + sim.def.harbor.channelTransitTicks * 2
     let depth = sim.def.harbor.slots[slot..<(slot + ship.length)].map { $0.depth }.min() ?? 0
     var t = sim.tick

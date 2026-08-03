@@ -6,7 +6,7 @@ import UIKit
 /// Every bundled sprite name lives here and nowhere else. A typo becomes a
 /// compile error rather than a silently blank image — `actool` drops an SVG it
 /// cannot parse with only a warning, and the result renders as empty space.
-enum HJSprite: String, CaseIterable {
+enum QLSprite: String, CaseIterable {
     case hull2 = "hull_2"
     case hull3 = "hull_3"
     case hull4 = "hull_4"
@@ -38,7 +38,7 @@ enum HJSprite: String, CaseIterable {
     var image: Image { Image(rawValue) }
 
     /// Hull art for a given length, clamped to what exists.
-    static func hull(length: Int) -> HJSprite {
+    static func hull(length: Int) -> QLSprite {
         switch max(2, min(5, length)) {
         case 2: return .hull2
         case 3: return .hull3
@@ -47,7 +47,7 @@ enum HJSprite: String, CaseIterable {
         }
     }
 
-    static func cargo(_ cargo: HJCargo) -> HJSprite {
+    static func cargo(_ cargo: QLCargo) -> QLSprite {
         switch cargo {
         case .container: return .cargoContainer
         case .bulk: return .cargoBulk
@@ -55,7 +55,7 @@ enum HJSprite: String, CaseIterable {
         }
     }
 
-    static func berth(_ equipment: HJEquipment) -> HJSprite {
+    static func berth(_ equipment: QLEquipment) -> QLSprite {
         switch equipment {
         case .none: return .berthEmpty
         case .crane: return .berthCrane
@@ -66,7 +66,7 @@ enum HJSprite: String, CaseIterable {
 }
 
 #if DEBUG
-extension HJSprite {
+extension QLSprite {
     /// Names any sprite whose asset did not make it into the bundle.
     static var missing: [String] {
         allCases.map(\.rawValue).filter { UIImage(named: $0) == nil }

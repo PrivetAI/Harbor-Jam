@@ -15,7 +15,7 @@ import UIKit
 /// the clock unless something opaque covers the inset. A `GeometryReader` cannot
 /// supply it here: inside a view that already ignores the safe area it reports
 /// zero.
-enum HJSafeArea {
+enum QLSafeArea {
     static var top: CGFloat {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
@@ -25,7 +25,7 @@ enum HJSafeArea {
     }
 }
 
-enum HJLayout {
+enum QLLayout {
 
     static var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
@@ -79,8 +79,8 @@ enum HJLayout {
 
     /// Reference board width for the art-weight scale factor.
     ///
-    /// The board is always width-bound in portrait: `HJGameView` hands the
-    /// board `geo.width - 24` and `HJBoardView` takes another 24 of padding, so
+    /// The board is always width-bound in portrait: `QLGameView` hands the
+    /// board `geo.width - 24` and `QLBoardView` takes another 24 of padding, so
     /// on the widest iPhone that exists (440pt — 16/17 Pro Max) the board is
     /// 440 - 24 - 24 = 392pt across, and every narrower iPhone is smaller
     /// still. 392 / 420 = 0.93, so `max(1, ...)` pins the factor to exactly 1
@@ -106,7 +106,7 @@ extension View {
     /// width. Returns `self` unchanged on iPhone / compact width.
     @ViewBuilder
     func hjColumn(_ width: CGFloat, _ h: UserInterfaceSizeClass?) -> some View {
-        if HJLayout.wide(h) {
+        if QLLayout.wide(h) {
             self.frame(maxWidth: width).frame(maxWidth: .infinity)
         } else {
             self
@@ -117,7 +117,7 @@ extension View {
     /// for panels that already sit inside a centred column.
     @ViewBuilder
     func hjCap(_ width: CGFloat, _ h: UserInterfaceSizeClass?) -> some View {
-        if HJLayout.wide(h) {
+        if QLLayout.wide(h) {
             self.frame(maxWidth: width)
         } else {
             self

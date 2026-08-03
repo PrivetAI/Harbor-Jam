@@ -1,10 +1,10 @@
 import Foundation
 
 /// Every balance number in the game. The tuning loop that has to satisfy the
-/// acceptance gate edits this enum and `HJCatalog.ports`, and nothing else — a
+/// acceptance gate edits this enum and `QLCatalog.ports`, and nothing else — a
 /// magic number anywhere else in the codebase is a bug, because it would be a
 /// lever the gate cannot see.
-enum HJTuning {
+enum QLTuning {
     /// The ONLY place ticks map to wall-clock time. Every balance number in the
     /// game, the whole baked corpus and every policy in the harness are in ticks,
     /// so changing this re-paces the game for a human without moving a single
@@ -17,7 +17,7 @@ enum HJTuning {
     /// ships arrive every 13–19 s, which is a mobile pace.
     static let tickHz = 10
 
-    /// Work units per ton, in doubled units (see `HJShip.unloadLeft`), so a hull
+    /// Work units per ton, in doubled units (see `QLShip.unloadLeft`), so a hull
     /// of `tons` occupies her berths for `tons · workPerTon` ticks on matching
     /// gear and 2.5× that on the wrong gear.
     ///
@@ -27,7 +27,7 @@ enum HJTuning {
     /// what fills the quay. Measured with a short unload and a long channel, the
     /// quay sat nearly empty and the arrival queue exploded — packing, gear and
     /// tide could not matter, and all three policies failed identically.
-    static func workPerTon(_ cargo: HJCargo) -> Int {
+    static func workPerTon(_ cargo: QLCargo) -> Int {
         switch cargo {
         case .container: return 60
         case .bulk: return 75
@@ -36,7 +36,7 @@ enum HJTuning {
     }
 
     /// Coins per ton.
-    static func rate(_ cargo: HJCargo) -> Int {
+    static func rate(_ cargo: QLCargo) -> Int {
         switch cargo {
         case .container: return 10
         case .bulk: return 8
@@ -61,14 +61,14 @@ enum HJTuning {
     static let patiencePerTickInStorm = 3
 }
 
-struct HJPortTemplate {
+struct QLPortTemplate {
     var index: Int              // 1...7
     var name: String
     var tagline: String
     var slotCount: Int
     var depthRange: ClosedRange<Int>
-    var equipment: [HJEquipment]     // pool drawn from when laying out a quay
-    var cargoes: [HJCargo]
+    var equipment: [QLEquipment]     // pool drawn from when laying out a quay
+    var cargoes: [QLCargo]
     /// Ticks between arrivals. This is the primary difficulty dial: mean gap
     /// against mean berth occupancy decides how full the quay runs, and mean gap
     /// against 2·channelTransitTicks decides whether the channel can keep up at
@@ -87,7 +87,7 @@ struct HJPortTemplate {
     var longShipTransitPenalty: Bool
 }
 
-enum HJCatalog {
+enum QLCatalog {
     static let shiftsPerPort = 12
     static var portCount: Int { ports.count }
     static var totalShifts: Int { portCount * shiftsPerPort }
@@ -95,15 +95,15 @@ enum HJCatalog {
     /// Port `n` opens at 20·(n−1) stars, out of 36 available per port.
     static func starsToUnlock(port: Int) -> Int { max(0, 20 * (port - 1)) }
 
-    static func template(port: Int) -> HJPortTemplate? {
+    static func template(port: Int) -> QLPortTemplate? {
         ports.first { $0.index == port }
     }
 
     /// Each port introduces exactly one new thing and nothing else. The order is
     /// the teaching order: a mechanic the player has not met cannot be what
     /// beats them.
-    static let ports: [HJPortTemplate] = [
-        HJPortTemplate(index: 1, name: "Quiet Cove", tagline: "Learn the quay",
+    static let ports: [QLPortTemplate] = [
+        QLPortTemplate(index: 1, name: "Quiet Cove", tagline: "Learn the quay",
                        slotCount: 8, depthRange: 5...5, equipment: [.crane],
                        cargoes: [.container], arrivalGap: 130...190,
                        channelTransitTicks: 20,
@@ -111,7 +111,7 @@ enum HJCatalog {
                        shipLengths: 2...3, draftRange: 1...3, shipCount: 12...16,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
-        HJPortTemplate(index: 2, name: "Tidewater Quay", tagline: "Mind the water line",
+        QLPortTemplate(index: 2, name: "Tidewater Quay", tagline: "Mind the water line",
                        slotCount: 9, depthRange: 2...5, equipment: [.crane],
                        cargoes: [.container], arrivalGap: 120...180,
                        channelTransitTicks: 20,
@@ -119,7 +119,7 @@ enum HJCatalog {
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 14...18,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
-        HJPortTemplate(index: 3, name: "Narrow Channel", tagline: "One way in",
+        QLPortTemplate(index: 3, name: "Narrow Channel", tagline: "One way in",
                        slotCount: 9, depthRange: 2...5, equipment: [.crane],
                        cargoes: [.container], arrivalGap: 110...165,
                        channelTransitTicks: 40,
@@ -127,7 +127,7 @@ enum HJCatalog {
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 16...20,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
-        HJPortTemplate(index: 4, name: "Mixed Berths", tagline: "Right gear, right berth",
+        QLPortTemplate(index: 4, name: "Mixed Berths", tagline: "Right gear, right berth",
                        slotCount: 10, depthRange: 2...5,
                        equipment: [.crane, .conveyor, .pipeline],
                        cargoes: [.container, .bulk, .liquid], arrivalGap: 105...160,
@@ -136,7 +136,7 @@ enum HJCatalog {
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 16...22,
                        usesOutages: false, usesStorms: false, usesVIP: false,
                        longShipTransitPenalty: false),
-        HJPortTemplate(index: 5, name: "Storm Roads", tagline: "Weather and repairs",
+        QLPortTemplate(index: 5, name: "Storm Roads", tagline: "Weather and repairs",
                        slotCount: 10, depthRange: 2...5,
                        equipment: [.crane, .conveyor, .pipeline],
                        cargoes: [.container, .bulk, .liquid], arrivalGap: 110...165,
@@ -145,7 +145,7 @@ enum HJCatalog {
                        shipLengths: 2...4, draftRange: 1...4, shipCount: 18...24,
                        usesOutages: true, usesStorms: true, usesVIP: false,
                        longShipTransitPenalty: false),
-        HJPortTemplate(index: 6, name: "Deepwater Port", tagline: "Big hulls, deep water",
+        QLPortTemplate(index: 6, name: "Deepwater Port", tagline: "Big hulls, deep water",
                        slotCount: 12, depthRange: 3...7,
                        equipment: [.crane, .conveyor, .pipeline],
                        // Longer hulls than any other port: a mean length of 4 on
@@ -158,7 +158,7 @@ enum HJCatalog {
                        shipLengths: 3...5, draftRange: 2...5, shipCount: 18...23,
                        usesOutages: true, usesStorms: true, usesVIP: false,
                        longShipTransitPenalty: true),
-        HJPortTemplate(index: 7, name: "Grand Harbor", tagline: "Everything at once",
+        QLPortTemplate(index: 7, name: "Grand Harbor", tagline: "Everything at once",
                        slotCount: 12, depthRange: 3...7,
                        equipment: [.crane, .conveyor, .pipeline, .none],
                        cargoes: [.container, .bulk, .liquid], arrivalGap: 115...170,
@@ -172,17 +172,17 @@ enum HJCatalog {
 
 // MARK: - The baked corpus
 
-extension HJCatalog {
-    private static var shiftCache: [HJShiftDef]? = nil
+extension QLCatalog {
+    private static var shiftCache: [QLShiftDef]? = nil
 
     /// The 84 shifts accepted by the offline gate. Generation does not happen on
     /// the device: a shift is only in this file because greedy play measurably
     /// lost ground on it, and that decision needs the whole policy harness.
-    static func loadShifts() -> [HJShiftDef] {
+    static func loadShifts() -> [QLShiftDef] {
         if let c = shiftCache { return c }
         guard let url = Bundle.main.url(forResource: "shifts", withExtension: "json"),
               let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode([HJShiftDef].self, from: data)
+              let decoded = try? JSONDecoder().decode([QLShiftDef].self, from: data)
         else {
             shiftCache = []
             return []
@@ -191,14 +191,14 @@ extension HJCatalog {
         return decoded
     }
 
-    static func shift(port: Int, shift: Int) -> HJShiftDef? {
+    static func shift(port: Int, shift: Int) -> QLShiftDef? {
         loadShifts().first { $0.port == port && $0.shift == shift }
     }
 }
 
 // MARK: - Watch (endless)
 
-enum HJWatch {
+enum QLWatch {
     static let slotCount = 10
     static let waveTicks = 900          // 90 s at 10 Hz — one upgrade choice per wave
     static let shipsPerWave = 6
@@ -209,22 +209,22 @@ enum HJWatch {
     static let gapDecayPercent = 96
     static let minGapPercent = 40
 
-    /// A deterministic endless shift. Uses the same `HJShiftDef` type as the
-    /// campaign, so `HJSim` does not know the difference and neither does the
+    /// A deterministic endless shift. Uses the same `QLShiftDef` type as the
+    /// campaign, so `QLSim` does not know the difference and neither does the
     /// harness. `parTicks` and both targets are `Int.max`: the Watch scores in
     /// tons, never in stars.
-    static func shift(seed: UInt64, waves: Int) -> HJShiftDef {
-        var rng = HJWatchRNG(seed: seed)
-        var slots: [HJSlot] = []
-        let gear: [HJEquipment] = [.crane, .conveyor, .pipeline]
+    static func shift(seed: UInt64, waves: Int) -> QLShiftDef {
+        var rng = QLWatchRNG(seed: seed)
+        var slots: [QLSlot] = []
+        let gear: [QLEquipment] = [.crane, .conveyor, .pipeline]
         for i in 0..<slotCount {
-            slots.append(HJSlot(depth: 3 + rng.int(4), equipment: gear[i % gear.count]))
+            slots.append(QLSlot(depth: 3 + rng.int(4), equipment: gear[i % gear.count]))
         }
         for i in stride(from: slots.count - 1, to: 0, by: -1) {
             slots.swapAt(i, rng.int(i + 1))
         }
 
-        var arrivals: [HJArrival] = []
+        var arrivals: [QLArrival] = []
         var at = 30
         var gap = openingGap
         let floor = openingGap * minGapPercent / 100
@@ -233,9 +233,9 @@ enum HJWatch {
             for _ in 0..<shipsPerWave {
                 let length = 2 + rng.int(4)
                 let draft = 1 + rng.int(5)
-                let cargo = HJCargo.allCases[rng.int(3)]
-                arrivals.append(HJArrival(tick: at,
-                                          ship: HJShip(id: id, length: length,
+                let cargo = QLCargo.allCases[rng.int(3)]
+                arrivals.append(QLArrival(tick: at,
+                                          ship: QLShip(id: id, length: length,
                                                        draft: min(draft, 6),
                                                        cargo: cargo,
                                                        tons: 2 + rng.int(5),
@@ -247,8 +247,8 @@ enum HJWatch {
             gap = max(floor, gap * gapDecayPercent / 100)
         }
 
-        return HJShiftDef(port: 0, shift: 0,
-                          harbor: HJHarborDef(slots: slots, channelTransitTicks: 30,
+        return QLShiftDef(port: 0, shift: 0,
+                          harbor: QLHarborDef(slots: slots, channelTransitTicks: 30,
                                               tideAmplitude: 1, tideStepTicks: 130,
                                               roadsteadCapacity: 5),
                           arrivals: arrivals, outages: [], storms: [],
@@ -258,7 +258,7 @@ enum HJWatch {
 
 /// SplitMix64 again — the harness has its own copy, and the app must not depend
 /// on the tooling.
-struct HJWatchRNG {
+struct QLWatchRNG {
     private var state: UInt64
     init(seed: UInt64) { state = seed &+ 0x9E3779B97F4A7C15 }
     mutating func next() -> UInt64 {

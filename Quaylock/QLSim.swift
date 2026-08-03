@@ -1,41 +1,41 @@
 import Foundation
 
-/// The rules of Harbor Jam, and the only thing in the codebase allowed to decide
+/// The rules of Quaylock, and the only thing in the codebase allowed to decide
 /// a game outcome. Deterministic and integer-only: the same shift definition and
 /// the same sequence of commands always produce the same result, which is what
 /// lets the offline harness measure the game the player actually gets.
-struct HJSim {
-    let def: HJShiftDef
+struct QLSim {
+    let def: QLShiftDef
     /// Fixed for a campaign shift; the Watch hands out one more level per wave,
     /// so this has to be settable mid-run. Determinism is unaffected: the
     /// harness never calls `applyUpgrades`, and a change only ever affects
     /// commands issued after it.
-    private(set) var upgrades: HJUpgradeLevels
+    private(set) var upgrades: QLUpgradeLevels
 
     private(set) var tick: Int = 0
-    private(set) var ships: [HJShip] = []
+    private(set) var ships: [QLShip] = []
     private(set) var reputation: Int
-    private(set) var counters = HJSimCounters()
+    private(set) var counters = QLSimCounters()
     private(set) var endTick: Int? = nil
 
-    private var pending: [HJArrival]        // not yet arrived, ascending by tick
+    private var pending: [QLArrival]        // not yet arrived, ascending by tick
     private let penalisesLongShips: Bool
 
     /// Computed, not stored: a Watch upgrade taken mid-run has to widen the
     /// roadstead immediately.
     var roadsteadCapacity: Int { def.harbor.roadsteadCapacity + upgrades.roadstead }
 
-    init(def: HJShiftDef, upgrades: HJUpgradeLevels) {
+    init(def: QLShiftDef, upgrades: QLUpgradeLevels) {
         self.def = def
         self.upgrades = upgrades
-        self.reputation = HJTuning.baseReputation + upgrades.crew
+        self.reputation = QLTuning.baseReputation + upgrades.crew
         self.pending = def.arrivals.sorted { $0.tick < $1.tick }
-        self.penalisesLongShips = HJCatalog.template(port: def.port)?.longShipTransitPenalty ?? false
+        self.penalisesLongShips = QLCatalog.template(port: def.port)?.longShipTransitPenalty ?? false
     }
 
     /// Raise upgrade levels mid-run. Reputation gained from a new crew level is
     /// credited immediately; nothing already resolved is recomputed.
-    mutating func applyUpgrades(_ new: HJUpgradeLevels) {
+    mutating func applyUpgrades(_ new: QLUpgradeLevels) {
         let crewGain = max(0, new.crew - upgrades.crew)
         upgrades = new
         reputation += crewGain
@@ -105,7 +105,7 @@ struct HJSim {
         ships.contains { $0.state == .transitingIn || $0.state == .transitingOut }
     }
 
-    var waitingShips: [HJShip] { ships.filter { $0.state == .waiting } }
+    var waitingShips: [QLShip] { ships.filter { $0.state == .waiting } }
 
     var isFailed: Bool { reputation <= 0 }
 
@@ -118,7 +118,7 @@ struct HJSim {
 
     // MARK: - Commands
 
-    func canBerth(shipID: Int, atSlot slot: Int) -> HJBerthRefusal {
+    func canBerth(shipID: Int, atSlot slot: Int) -> QLBerthRefusal {
         guard let ship = ships.first(where: { $0.id == shipID }) else { return .notWaiting }
         guard ship.state == .waiting else { return .notWaiting }
         guard slot >= 0, slot + ship.length <= def.harbor.slots.count else { return .tooLong }
@@ -138,7 +138,7 @@ struct HJSim {
     /// this moment — not on arrival — so a second hull cannot be aimed at the
     /// same water while the first is still in the channel.
     @discardableResult
-    mutating func berth(shipID: Int, atSlot slot: Int) -> HJBerthRefusal {
+    mutating func berth(shipID: Int, atSlot slot: Int) -> QLBerthRefusal {
         let refusal = canBerth(shipID: shipID, atSlot: slot)
         if refusal == .channelBusy { counters.channelRefusals += 1 }
         guard refusal == .none, let idx = ships.firstIndex(where: { $0.id == shipID })
@@ -246,7 +246,7 @@ struct HJSim {
     }
 
     private mutating func burnPatience() {
-        let burn = stormActive ? HJTuning.patiencePerTickInStorm : HJTuning.patiencePerTick
+        let burn = stormActive ? QLTuning.patiencePerTickInStorm : QLTuning.patiencePerTick
         for i in ships.indices where ships[i].state == .waiting {
             ships[i].patienceLeft -= burn
             if ships[i].patienceLeft <= 0 {
@@ -263,23 +263,23 @@ struct HJSim {
 
     // MARK: - Derived numbers
 
-    private func transitTicks(for ship: HJShip) -> Int {
+    private func transitTicks(for ship: QLShip) -> Int {
         var t = def.harbor.channelTransitTicks
-        t = t * (100 - HJTuning.transitDiscountPerTugLevel * upgrades.tugs) / 100
-        if penalisesLongShips && ship.length >= HJTuning.longShipLength {
+        t = t * (100 - QLTuning.transitDiscountPerTugLevel * upgrades.tugs) / 100
+        if penalisesLongShips && ship.length >= QLTuning.longShipLength {
             t = t * 3 / 2
         }
         return max(1, t)
     }
 
-    private func unloadWork(tons: Int, cargo: HJCargo, matched: Bool) -> Int {
-        var w = tons * HJTuning.workPerTon(cargo) * (matched ? 2 : 5)
-        w = w * (100 - HJTuning.unloadDiscountPerCraneLevel * upgrades.cranes) / 100
+    private func unloadWork(tons: Int, cargo: QLCargo, matched: Bool) -> Int {
+        var w = tons * QLTuning.workPerTon(cargo) * (matched ? 2 : 5)
+        w = w * (100 - QLTuning.unloadDiscountPerCraneLevel * upgrades.cranes) / 100
         return max(2, w)
     }
 
-    private func revenue(for ship: HJShip) -> Int {
-        ship.tons * HJTuning.rate(ship.cargo) * (ship.isVIP ? HJTuning.vipRateMultiplier : 1)
+    private func revenue(for ship: QLShip) -> Int {
+        ship.tons * QLTuning.rate(ship.cargo) * (ship.isVIP ? QLTuning.vipRateMultiplier : 1)
     }
 
     /// Revenue plus whatever was saved against par. Speed is in the score on
@@ -293,7 +293,7 @@ struct HJSim {
     func score() -> Int {
         guard !isFailed else { return counters.revenue }
         let finished = endTick ?? tick
-        let speed = max(0, def.parTicks - finished) * HJTuning.speedRate
+        let speed = max(0, def.parTicks - finished) * QLTuning.speedRate
         return counters.revenue + speed
     }
 

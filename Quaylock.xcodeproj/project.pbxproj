@@ -1,0 +1,385 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0202D9932DE6F233E391BC8E /* QuaylockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09216A650447FE6B08DEE37B /* QuaylockApp.swift */; };
+		C0DEAD0000000000000002 /* QLAdaptive.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEAD0000000000000001 /* QLAdaptive.swift */; };
+		C0DE520000000000000003 /* QLShiftCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000003 /* QLShiftCatalog.swift */; };
+		C0DE520000000000000002 /* QLSim.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000002 /* QLSim.swift */; };
+		C0DE520000000000000007 /* QLShiftViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000007 /* QLShiftViewModel.swift */; };
+		C0DE520000000000000005 /* QLHarborBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000005 /* QLHarborBoardView.swift */; };
+		C0DE520000000000000006 /* QLShiftView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000006 /* QLShiftView.swift */; };
+		C0DE520000000000000008 /* QLPortsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000008 /* QLPortsView.swift */; };
+		C0DE520000000000000009 /* QLShipyardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000009 /* QLShipyardView.swift */; };
+		C0DE52000000000000000A /* QLWatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000A /* QLWatchView.swift */; };
+		C0DE520000000000000001 /* QLSimModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000001 /* QLSimModel.swift */; };
+		C0DE520000000000000004 /* QLSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000004 /* QLSprites.swift */; };
+		03001EE2CCE333ABA05D4257 /* QLTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* QLTheme.swift */; };
+		0943364D376D3F1FE86C8C61 /* QLSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103E9862DA27096EC4D1AEA /* QLSave.swift */; };
+		1B545AB51154A6905EA6DA9A /* QuaylockLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */; };
+		21428B0C1EE585D0E999BDC4 /* QLMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFAE8E20E207B3D49465793 /* QLMoreView.swift */; };
+		379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 569E6B683C26E491764BED09 /* Assets.xcassets */; };
+		C0DE52000000000000000B /* shifts.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000B /* shifts.json */; };
+		820482F968DA3A71D49B1CED /* QLRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB770381C26A33FD4F1028B /* QLRootView.swift */; };
+		DEFDC4934A20DC76712A9AFD /* QLAwardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240BCDE9D72B6C1A064C6B4E /* QLAwardsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C0DEAD0000000000000001 /* QLAdaptive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLAdaptive.swift; sourceTree = "<group>"; };
+		C0DE510000000000000003 /* QLShiftCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLShiftCatalog.swift; sourceTree = "<group>"; };
+		C0DE510000000000000002 /* QLSim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLSim.swift; sourceTree = "<group>"; };
+		C0DE510000000000000007 /* QLShiftViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLShiftViewModel.swift; sourceTree = "<group>"; };
+		C0DE510000000000000005 /* QLHarborBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLHarborBoardView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000006 /* QLShiftView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLShiftView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000008 /* QLPortsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLPortsView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000009 /* QLShipyardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLShipyardView.swift; sourceTree = "<group>"; };
+		C0DE51000000000000000A /* QLWatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLWatchView.swift; sourceTree = "<group>"; };
+		C0DE510000000000000001 /* QLSimModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLSimModel.swift; sourceTree = "<group>"; };
+		C0DE510000000000000004 /* QLSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLSprites.swift; sourceTree = "<group>"; };
+		09216A650447FE6B08DEE37B /* QuaylockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuaylockApp.swift; sourceTree = "<group>"; };
+		240BCDE9D72B6C1A064C6B4E /* QLAwardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLAwardsView.swift; sourceTree = "<group>"; };
+		4EFAE8E20E207B3D49465793 /* QLMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLMoreView.swift; sourceTree = "<group>"; };
+		569E6B683C26E491764BED09 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C0DE51000000000000000B /* shifts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = shifts.json; sourceTree = "<group>"; };
+		6103E9862DA27096EC4D1AEA /* QLSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLSave.swift; sourceTree = "<group>"; };
+		C448DC7CBFBEE35B4B525025 /* Quaylock.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Quaylock.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuaylockLoadingScreen.swift; sourceTree = "<group>"; };
+		E57C6715440CFBAEB4F58D73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		ED7ABB41533F46E128EC3724 /* QLTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLTheme.swift; sourceTree = "<group>"; };
+		FBB770381C26A33FD4F1028B /* QLRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLRootView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		6DE6B1E2CA3A1DE71041970F = {
+			isa = PBXGroup;
+			children = (
+				E8C6ADF1294695810FC9BE0F /* Quaylock */,
+				6E30AB0A849F2A9F0C6E52AA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		6E30AB0A849F2A9F0C6E52AA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C448DC7CBFBEE35B4B525025 /* Quaylock.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E8C6ADF1294695810FC9BE0F /* Quaylock */ = {
+			isa = PBXGroup;
+			children = (
+				569E6B683C26E491764BED09 /* Assets.xcassets */,
+				09216A650447FE6B08DEE37B /* QuaylockApp.swift */,
+				E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */,
+				C0DEAD0000000000000001 /* QLAdaptive.swift */,
+				240BCDE9D72B6C1A064C6B4E /* QLAwardsView.swift */,
+				4EFAE8E20E207B3D49465793 /* QLMoreView.swift */,
+				FBB770381C26A33FD4F1028B /* QLRootView.swift */,
+				6103E9862DA27096EC4D1AEA /* QLSave.swift */,
+				C0DE510000000000000003 /* QLShiftCatalog.swift */,
+				C0DE510000000000000002 /* QLSim.swift */,
+				C0DE510000000000000007 /* QLShiftViewModel.swift */,
+				C0DE510000000000000005 /* QLHarborBoardView.swift */,
+				C0DE510000000000000006 /* QLShiftView.swift */,
+				C0DE510000000000000008 /* QLPortsView.swift */,
+				C0DE510000000000000009 /* QLShipyardView.swift */,
+				C0DE51000000000000000A /* QLWatchView.swift */,
+				C0DE510000000000000001 /* QLSimModel.swift */,
+				C0DE510000000000000004 /* QLSprites.swift */,
+				ED7ABB41533F46E128EC3724 /* QLTheme.swift */,
+				C0DE51000000000000000B /* shifts.json */,
+				E57C6715440CFBAEB4F58D73 /* Info.plist */,
+			);
+			path = "Quaylock";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9D554A11A6D6FCC4B1173CB0 /* Quaylock */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BD2C44A92DA708D6B3399F11 /* Build configuration list for PBXNativeTarget "Quaylock" */;
+			buildPhases = (
+				D0FBB2BBB0982F7A26FCBE9D /* Sources */,
+				F115417AB24C0E0F4821A9A2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Quaylock";
+			packageProductDependencies = (
+			);
+			productName = "Quaylock";
+			productReference = C448DC7CBFBEE35B4B525025 /* Quaylock.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3E278E492B20D117079AC866 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					9D554A11A6D6FCC4B1173CB0 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 7969DE2660D9D2365E02BE60 /* Build configuration list for PBXProject "Quaylock" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 6DE6B1E2CA3A1DE71041970F;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 6E30AB0A849F2A9F0C6E52AA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9D554A11A6D6FCC4B1173CB0 /* Quaylock */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F115417AB24C0E0F4821A9A2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */,
+				C0DE52000000000000000B /* shifts.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D0FBB2BBB0982F7A26FCBE9D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0DEAD0000000000000002 /* QLAdaptive.swift in Sources */,
+				DEFDC4934A20DC76712A9AFD /* QLAwardsView.swift in Sources */,
+				21428B0C1EE585D0E999BDC4 /* QLMoreView.swift in Sources */,
+				820482F968DA3A71D49B1CED /* QLRootView.swift in Sources */,
+				0943364D376D3F1FE86C8C61 /* QLSave.swift in Sources */,
+				C0DE520000000000000003 /* QLShiftCatalog.swift in Sources */,
+				C0DE520000000000000002 /* QLSim.swift in Sources */,
+				C0DE520000000000000007 /* QLShiftViewModel.swift in Sources */,
+				C0DE520000000000000005 /* QLHarborBoardView.swift in Sources */,
+				C0DE520000000000000006 /* QLShiftView.swift in Sources */,
+				C0DE520000000000000008 /* QLPortsView.swift in Sources */,
+				C0DE520000000000000009 /* QLShipyardView.swift in Sources */,
+				C0DE52000000000000000A /* QLWatchView.swift in Sources */,
+				C0DE520000000000000001 /* QLSimModel.swift in Sources */,
+				C0DE520000000000000004 /* QLSprites.swift in Sources */,
+				03001EE2CCE333ABA05D4257 /* QLTheme.swift in Sources */,
+				0202D9932DE6F233E391BC8E /* QuaylockApp.swift in Sources */,
+				1B545AB51154A6905EA6DA9A /* QuaylockLoadingScreen.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0FFD3B526DA5B0920FCC1613 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = "Quaylock/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.quaylock.app";
+				PRODUCT_NAME = "Quaylock";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3F31EE297FBE0DEE1F9F4E62 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		77414FDB9D4F9F42C222233E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		EA27ECB42E6DC287CC56C896 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Manual;
+				INFOPLIST_FILE = "Quaylock/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.quaylock.app";
+				PRODUCT_NAME = "Quaylock";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7969DE2660D9D2365E02BE60 /* Build configuration list for PBXProject "Quaylock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3F31EE297FBE0DEE1F9F4E62 /* Debug */,
+				77414FDB9D4F9F42C222233E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BD2C44A92DA708D6B3399F11 /* Build configuration list for PBXNativeTarget "Quaylock" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EA27ECB42E6DC287CC56C896 /* Debug */,
+				0FFD3B526DA5B0920FCC1613 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3E278E492B20D117079AC866 /* Project object */;
+}

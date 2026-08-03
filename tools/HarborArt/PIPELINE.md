@@ -1,4 +1,4 @@
-# Harbor Jam — sprite pipeline
+# Quaylock — sprite pipeline
 
 **Decision: SVG in the asset catalog — CONFIRMED WORKING.** No rasterizer, no PNG fallback.
 
@@ -20,7 +20,7 @@ plus the screenshot.
 
 ## Layout
 
-Each sprite is `Harbor Jam/Assets.xcassets/<name>.imageset/` containing `<name>.svg` and:
+Each sprite is `Quaylock/Assets.xcassets/<name>.imageset/` containing `<name>.svg` and:
 
 ```json
 {

@@ -4,10 +4,10 @@ import Foundation
 /// hull needs or it does not, and "nearly right" is not a case. Two outcomes are
 /// something a player can read off the quay at a glance; a matrix of partial
 /// matches is not.
-enum HJCargo: Int, Codable, CaseIterable {
+enum QLCargo: Int, Codable, CaseIterable {
     case container = 0, bulk = 1, liquid = 2
 
-    var equipment: HJEquipment {
+    var equipment: QLEquipment {
         switch self {
         case .container: return .crane
         case .bulk: return .conveyor
@@ -24,25 +24,25 @@ enum HJCargo: Int, Codable, CaseIterable {
     }
 }
 
-enum HJEquipment: Int, Codable, CaseIterable {
+enum QLEquipment: Int, Codable, CaseIterable {
     case none = 0, crane = 1, conveyor = 2, pipeline = 3
 }
 
-struct HJSlot: Codable, Equatable {
+struct QLSlot: Codable, Equatable {
     var depth: Int              // 1...5, before tide and dredging
-    var equipment: HJEquipment
+    var equipment: QLEquipment
 }
 
-enum HJShipState: Int, Codable {
+enum QLShipState: Int, Codable {
     case waiting = 0, transitingIn = 1, berthed = 2, aground = 3
     case transitingOut = 4, served = 5, lost = 6
 }
 
-struct HJShip: Codable, Equatable, Identifiable {
+struct QLShip: Codable, Equatable, Identifiable {
     var id: Int
     var length: Int             // 2...5 slots
     var draft: Int              // 1...5
-    var cargo: HJCargo
+    var cargo: QLCargo
     var tons: Int
     /// Stored DOUBLED. Patience burns 2 units per tick normally and 3 during a
     /// storm, which is how the ×1.5 storm multiplier stays in integer maths —
@@ -51,7 +51,7 @@ struct HJShip: Codable, Equatable, Identifiable {
     var patienceTicks: Int
     var isVIP: Bool
 
-    var state: HJShipState = .waiting
+    var state: QLShipState = .waiting
     var patienceLeft: Int = 0
     var berthStart: Int? = nil  // index of the first occupied slot
     /// Stored DOUBLED, same reason. Unload burns 2 units per tick; matching gear
@@ -72,63 +72,63 @@ struct HJShip: Codable, Equatable, Identifiable {
     }
 }
 
-struct HJHarborDef: Codable, Equatable {
-    var slots: [HJSlot]
+struct QLHarborDef: Codable, Equatable {
+    var slots: [QLSlot]
     var channelTransitTicks: Int
     var tideAmplitude: Int      // 0, 1 or 2
     var tideStepTicks: Int
     var roadsteadCapacity: Int
 }
 
-struct HJArrival: Codable, Equatable {
+struct QLArrival: Codable, Equatable {
     var tick: Int
-    var ship: HJShip
+    var ship: QLShip
 }
 
-struct HJSlotOutage: Codable, Equatable {
+struct QLSlotOutage: Codable, Equatable {
     var slot: Int
     var startTick: Int
     var endTick: Int
 }
 
-struct HJStormWindow: Codable, Equatable {
+struct QLStormWindow: Codable, Equatable {
     var startTick: Int
     var endTick: Int
 }
 
-struct HJShiftDef: Codable, Equatable {
+struct QLShiftDef: Codable, Equatable {
     var port: Int               // 1...7
     var shift: Int              // 1...12
-    var harbor: HJHarborDef
-    var arrivals: [HJArrival]
-    var outages: [HJSlotOutage]
-    var storms: [HJStormWindow]
+    var harbor: QLHarborDef
+    var arrivals: [QLArrival]
+    var outages: [QLSlotOutage]
+    var storms: [QLStormWindow]
     var parTicks: Int           // baked by HarborForge from policy S
     var target2: Int
     var target3: Int
 }
 
-struct HJUpgradeLevels: Codable, Equatable {
+struct QLUpgradeLevels: Codable, Equatable {
     var cranes: Int = 0         // 0...5, -8 % unload each
     var tugs: Int = 0           // 0...3, -10 % channel transit each
     var dredge: Int = 0         // 0...2, +1 depth on every slot each
     var roadstead: Int = 0      // 0...2, +1 waiting berth each
     var crew: Int = 0           // 0...2, +1 starting reputation each
 
-    static let zero = HJUpgradeLevels()
+    static let zero = QLUpgradeLevels()
 }
 
 /// Why a berth command was refused. The board draws each of these differently;
 /// collapsing them into one generic shake is what made the previous version of
 /// this game feel arbitrary rather than hard.
-enum HJBerthRefusal: Int, Equatable {
+enum QLBerthRefusal: Int, Equatable {
     case none = 0, tooLong, occupied, tooShallow, channelBusy, notWaiting, outage
 }
 
 /// Proof that each advertised mechanic actually fired. The acceptance gate reads
 /// these: four of the five mechanics in the previous game were provably inert,
 /// and nobody noticed until something counted them.
-struct HJSimCounters: Codable, Equatable {
+struct QLSimCounters: Codable, Equatable {
     var groundings: Int = 0
     /// Commands refused because the channel was occupied. Counts player mistakes
     /// only — a policy checks before it acts, so this stays 0 in the harness and

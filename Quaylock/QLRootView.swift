@@ -1,28 +1,28 @@
 import SwiftUI
 
-struct HJRootView: View {
-    @EnvironmentObject var store: HJStore
+struct QLRootView: View {
+    @EnvironmentObject var store: QLStore
     @Environment(\.horizontalSizeClass) private var hSize
     @State private var selectedTab = 0
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            HJTheme.chartDeep.ignoresSafeArea()
+            QLTheme.chartDeep.ignoresSafeArea()
 
             VStack(spacing: 0) {
                 Group {
                     switch selectedTab {
                     case 0:
-                        NavigationView { HJPortsView() }
+                        NavigationView { QLPortsView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 1:
-                        NavigationView { HJWatchView() }
+                        NavigationView { QLWatchView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 2:
-                        NavigationView { HJAwardsView() }
+                        NavigationView { QLAwardsView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     default:
-                        NavigationView { HJMoreView() }
+                        NavigationView { QLMoreView() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     }
                 }
@@ -35,8 +35,8 @@ struct HJRootView: View {
             // scrolled content stops drawing across the clock. Anything added
             // after this would sit under it.
             VStack(spacing: 0) {
-                HJTheme.chartDeep
-                    .frame(height: HJSafeArea.top)
+                QLTheme.chartDeep
+                    .frame(height: QLSafeArea.top)
                 Spacer(minLength: 0)
             }
             .ignoresSafeArea(edges: .top)
@@ -45,7 +45,7 @@ struct HJRootView: View {
         .preferredColorScheme(.dark)
         .onAppear {
             #if DEBUG
-            assert(HJSprite.missing.isEmpty, "missing sprites: \(HJSprite.missing)")
+            assert(QLSprite.missing.isEmpty, "missing sprites: \(QLSprite.missing)")
             #endif
         }
     }
@@ -53,22 +53,22 @@ struct HJRootView: View {
     private var tabBar: some View {
         HStack(spacing: 0) {
             tabButton(index: 0, label: "Ports") {
-                AnyView(HJWaveShape()
+                AnyView(QLWaveShape()
                     .stroke(iconColor(0), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
                     .frame(width: 26, height: 17))
             }
             tabButton(index: 1, label: "Watch") {
-                AnyView(HJPulseShape()
+                AnyView(QLPulseShape()
                     .stroke(iconColor(1), style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
                     .frame(width: 24, height: 18))
             }
             tabButton(index: 2, label: "Awards") {
-                AnyView(HJTrophyShape()
+                AnyView(QLTrophyShape()
                     .fill(iconColor(2))
                     .frame(width: 22, height: 22))
             }
             tabButton(index: 3, label: "More") {
-                AnyView(HJGearShape()
+                AnyView(QLGearShape()
                     .fill(iconColor(3))
                     .frame(width: 22, height: 22))
             }
@@ -76,18 +76,18 @@ struct HJRootView: View {
         // iPad: four tabs spread across 1024pt would strand each label in its
         // own quadrant. Cap the button row and re-centre it — the cap applies
         // BEFORE the padding/background so the bar still spans full width.
-        .hjColumn(HJLayout.tabBarColumn, hSize)
+        .hjColumn(QLLayout.tabBarColumn, hSize)
         .padding(.top, 10)
         .padding(.bottom, 6)
         .background(
-            HJTheme.cardBG
-                .overlay(Rectangle().fill(HJTheme.contour.opacity(0.5)).frame(height: 1), alignment: .top)
+            QLTheme.cardBG
+                .overlay(Rectangle().fill(QLTheme.contour.opacity(0.5)).frame(height: 1), alignment: .top)
                 .edgesIgnoringSafeArea(.bottom)
         )
     }
 
     private func iconColor(_ index: Int) -> Color {
-        selectedTab == index ? HJTheme.cyan : HJTheme.cyanSoft.opacity(0.35)
+        selectedTab == index ? QLTheme.cyan : QLTheme.cyanSoft.opacity(0.35)
     }
 
     private func tabButton(index: Int, label: String, @ViewBuilder icon: () -> AnyView) -> some View {
@@ -96,7 +96,7 @@ struct HJRootView: View {
                 icon()
                     .frame(height: 24)
                 Text(label)
-                    .font(HJTheme.body(10, weight: selectedTab == index ? .bold : .medium))
+                    .font(QLTheme.body(10, weight: selectedTab == index ? .bold : .medium))
                     .foregroundColor(iconColor(index))
             }
             .frame(maxWidth: .infinity)
