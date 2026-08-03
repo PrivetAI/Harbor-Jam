@@ -1,18 +1,22 @@
 import SwiftUI
 
+/// The nautical-chart palette. Every colour in the app comes from here, and the
+/// same hex values are hard-coded in the SVG sprites — move one and the other has
+/// to move with it.
 enum HJTheme {
-    static let cream = Color(red: 0.969, green: 0.953, blue: 0.918)      // #F7F3EA
-    static let navy = Color(red: 0.086, green: 0.196, blue: 0.290)       // #16324A
-    static let seafoam = Color(red: 0.659, green: 0.847, blue: 0.788)    // #A8D8C9
-    static let buoyRed = Color(red: 0.851, green: 0.325, blue: 0.310)    // #D9534F
-    static let sunGold = Color(red: 0.914, green: 0.706, blue: 0.298)    // #E9B44C
-    static let driftwood = Color(red: 0.725, green: 0.608, blue: 0.467)  // #B99B77
-    static let inkSoft = Color(red: 0.086, green: 0.196, blue: 0.290).opacity(0.55)
-    static let cardBG = Color.white.opacity(0.72)
+    static let chartDeep = Color(red: 0.047, green: 0.125, blue: 0.200)  // #0C2033
+    static let chartGrid = Color(red: 0.086, green: 0.204, blue: 0.294)  // #16344B
+    static let contour   = Color(red: 0.184, green: 0.424, blue: 0.525)  // #2F6C86
+    static let cyan      = Color(red: 0.373, green: 0.816, blue: 0.910)  // #5FD0E8
+    static let cyanSoft  = Color(red: 0.624, green: 0.910, blue: 0.961)  // #9FE8F5
+    static let hullFill  = Color(red: 0.071, green: 0.227, blue: 0.322)  // #123A52
+    static let gold      = Color(red: 0.949, green: 0.784, blue: 0.251)  // #F2C840
+    static let alert     = Color(red: 0.776, green: 0.271, blue: 0.239)  // #C6453D
+    static let success   = Color(red: 0.243, green: 0.549, blue: 0.455)  // #3E8C74
+    static let warn      = Color(red: 0.910, green: 0.573, blue: 0.353)  // #E8925A
 
-    // Night Harbor board-art variants (UI chrome stays light)
-    static let nightWater = Color(red: 0.153, green: 0.235, blue: 0.333)
-    static let nightBoard = Color(red: 0.110, green: 0.173, blue: 0.251)
+    static let cardBG  = Color(red: 0.071, green: 0.161, blue: 0.243)
+    static let inkSoft = Color(red: 0.624, green: 0.910, blue: 0.961).opacity(0.55)
 
     static func display(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
         .custom("Georgia", size: size).weight(weight)
@@ -24,17 +28,11 @@ enum HJTheme {
         .system(size: size, weight: weight, design: .rounded)
     }
 
-    static let hullColors: [Color] = [
-        Color(red: 0.851, green: 0.325, blue: 0.310),  // red
-        Color(red: 0.243, green: 0.463, blue: 0.647),  // blue
-        Color(red: 0.914, green: 0.706, blue: 0.298),  // gold
-        Color(red: 0.365, green: 0.596, blue: 0.443),  // green
-        Color(red: 0.596, green: 0.443, blue: 0.647),  // violet
-        Color(red: 0.851, green: 0.545, blue: 0.310),  // orange
-        Color(red: 0.375, green: 0.643, blue: 0.635),  // teal
-        Color(red: 0.545, green: 0.478, blue: 0.400),  // walnut
-    ]
 }
+
+/// Heading for the arrow glyph. Local to the theme — the board is no longer a
+/// grid with compass headings, and the old `HJDirection` left with the engine.
+enum HJArrowDirection { case north, east, south, west }
 
 // MARK: - Custom shape icons (no SF Symbols anywhere)
 
@@ -191,7 +189,7 @@ struct HJPauseShape: Shape {
 }
 
 struct HJArrowShape: Shape {
-    var direction: HJDirection
+    var direction: HJArrowDirection
     func path(in rect: CGRect) -> Path {
         var p = Path()
         let w = rect.width, h = rect.height
@@ -297,7 +295,7 @@ struct HJCloseShape: Shape {
 struct HJStarIcon: View {
     var size: CGFloat
     var filled: Bool
-    var color: Color = HJTheme.sunGold
+    var color: Color = HJTheme.gold
     var body: some View {
         ZStack {
             if filled {

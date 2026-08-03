@@ -13,12 +13,12 @@ struct HJMoreView: View {
 
     var body: some View {
         ZStack {
-            HJTheme.cream.ignoresSafeArea()
+            HJTheme.chartDeep.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 16) {
                     Text("More")
                         .font(HJTheme.display(28))
-                        .foregroundColor(HJTheme.navy)
+                        .foregroundColor(HJTheme.cyanSoft)
                         .padding(.top, 12)
 
                     // Toggles keep their label and switch within reach of each
@@ -57,15 +57,11 @@ struct HJMoreView: View {
             toggleRow("Haptics", isOn: Binding(
                 get: { store.save.hapticsOn },
                 set: { store.save.hapticsOn = $0; store.persist() }))
-            toggleRow("Colorblind boat patterns", isOn: Binding(
-                get: { store.save.colorblindPatterns },
-                set: { store.save.colorblindPatterns = $0; store.persist() }))
-
             Button(action: { activeSheet = .privacy }) {
                 HStack {
                     Text("Privacy Policy")
                         .font(HJTheme.body(14, weight: .semibold))
-                        .foregroundColor(HJTheme.navy)
+                        .foregroundColor(HJTheme.cyanSoft)
                     Spacer()
                     HJChevronShape()
                         .stroke(HJTheme.inkSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
@@ -78,7 +74,7 @@ struct HJMoreView: View {
                 HStack {
                     Text("Reset Progress")
                         .font(HJTheme.body(14, weight: .semibold))
-                        .foregroundColor(HJTheme.buoyRed)
+                        .foregroundColor(HJTheme.alert)
                     Spacer()
                 }
                 .padding(.vertical, 12)
@@ -92,12 +88,12 @@ struct HJMoreView: View {
         HStack {
             Text(label)
                 .font(HJTheme.body(14, weight: .semibold))
-                .foregroundColor(HJTheme.navy)
+                .foregroundColor(HJTheme.cyanSoft)
             Spacer()
             Button(action: { isOn.wrappedValue.toggle() }) {
                 ZStack(alignment: isOn.wrappedValue ? .trailing : .leading) {
                     Capsule()
-                        .fill(isOn.wrappedValue ? HJTheme.navy : HJTheme.navy.opacity(0.18))
+                        .fill(isOn.wrappedValue ? HJTheme.cyanSoft : HJTheme.cyanSoft.opacity(0.18))
                         .frame(width: 46, height: 27)
                     Circle()
                         .fill(Color.white)
@@ -114,7 +110,7 @@ struct HJMoreView: View {
         HStack {
             Text(title)
                 .font(HJTheme.display(16))
-                .foregroundColor(HJTheme.navy)
+                .foregroundColor(HJTheme.cyanSoft)
             Spacer()
         }
         .padding(.bottom, 4)
@@ -150,44 +146,44 @@ struct HJMoreView: View {
         codexEntry(title: "Boats & Bows",
                    text: "Every boat sails only forward, in the direction of its pointed bow. A clear line to the edge means it exits for good. Blocked boats bump and wait.") {
             AnyView(HJArrowShape(direction: .east)
-                .stroke(HJTheme.navy, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 26, height: 26))
         }
         codexEntry(title: "Currents",
                    text: "Arrow lanes mark flowing water. A boat that ends its slide inside a lane is pushed one cell sideways — plan around the drift, or use it as a shortcut.") {
             AnyView(HJWaveShape()
-                .stroke(HJTheme.navy, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 26, height: 16))
         }
         codexEntry(title: "Tides",
                    text: "The tide turns every 3 moves. At low tide, sandy shallows harden into solid bars no hull can cross. At high tide they flood over and open up.") {
             AnyView(HJPulseShape()
-                .stroke(HJTheme.navy, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 26, height: 18))
         }
         codexEntry(title: "The Ferry",
                    text: "The grey ferry crosses its row on a fixed schedule, advancing after each of your moves and wrapping around. It never stops for anyone — time your crossings.") {
             AnyView(Rectangle()
-                .fill(HJTheme.navy.opacity(0.7))
+                .fill(HJTheme.cyanSoft.opacity(0.7))
                 .frame(width: 26, height: 12)
                 .cornerRadius(3))
         }
         codexEntry(title: "Buoy Chains",
                    text: "A boat wearing a red buoy is anchored in place. Its key boat — somewhere in the harbor — must exit first to cast it loose.") {
             AnyView(Circle()
-                .fill(HJTheme.buoyRed)
+                .fill(HJTheme.alert)
                 .frame(width: 18, height: 18))
         }
         codexEntry(title: "Turning Basins",
                    text: "A boat that noses into a turning basin stops there and comes about, bow reversed. It is the only way to send a hull back the way it came — park it clear of a lane now, come back for it later.") {
             AnyView(HJTugShape()
-                .stroke(HJTheme.navy, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .stroke(HJTheme.cyanSoft, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 22, height: 22))
         }
         codexEntry(title: "Barges",
                    text: "Wide 2×2 barges shrug off currents entirely and block them for others. Slow to place, mighty to move.") {
             AnyView(RoundedRectangle(cornerRadius: 4)
-                .fill(HJTheme.driftwood)
+                .fill(HJTheme.contour)
                 .frame(width: 20, height: 20))
         }
     }
@@ -196,14 +192,14 @@ struct HJMoreView: View {
         HStack(alignment: .top, spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(HJTheme.seafoam.opacity(0.5))
+                    .fill(HJTheme.cyan.opacity(0.5))
                     .frame(width: 44, height: 44)
                 icon()
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(title)
                     .font(HJTheme.body(14, weight: .bold))
-                    .foregroundColor(HJTheme.navy)
+                    .foregroundColor(HJTheme.cyanSoft)
                 Text(text)
                     .font(HJTheme.body(12))
                     .foregroundColor(HJTheme.inkSoft)
@@ -216,11 +212,11 @@ struct HJMoreView: View {
     private var aboutCard: some View {
         VStack(spacing: 6) {
             HJWaveShape()
-                .stroke(HJTheme.navy.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .stroke(HJTheme.cyanSoft.opacity(0.5), style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .frame(width: 40, height: 20)
             Text("Harbor Jam")
                 .font(HJTheme.display(15))
-                .foregroundColor(HJTheme.navy)
+                .foregroundColor(HJTheme.cyanSoft)
             Text("Version 1.0")
                 .font(HJTheme.body(11))
                 .foregroundColor(HJTheme.inkSoft)

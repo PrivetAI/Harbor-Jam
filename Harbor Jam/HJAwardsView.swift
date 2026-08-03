@@ -6,12 +6,12 @@ struct HJAwardsView: View {
 
     var body: some View {
         ZStack {
-            HJTheme.cream.ignoresSafeArea()
+            HJTheme.chartDeep.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 16) {
                     Text("Awards")
                         .font(HJTheme.display(28))
-                        .foregroundColor(HJTheme.navy)
+                        .foregroundColor(HJTheme.cyanSoft)
                         .padding(.top, 12)
 
                     statsBlock
@@ -50,16 +50,16 @@ struct HJAwardsView: View {
             HStack {
                 Text("Harbor Log")
                     .font(HJTheme.display(16))
-                    .foregroundColor(HJTheme.navy)
+                    .foregroundColor(HJTheme.cyanSoft)
                 Spacer()
             }
-            statRow("Levels cleared", "\(store.save.stats.levelsCleared)")
-            statRow("Boats exited", "\(store.save.stats.boatsExited)")
-            statRow("Total moves", "\(store.save.stats.totalTaps)")
-            statRow("Undos used", "\(store.save.stats.totalUndos)")
-            statRow("Wins without undo", "\(store.save.stats.winsWithoutUndo)")
-            statRow("Daily streak", "\(store.save.dailyStreak)")
-            statRow("Stars collected", "\(store.totalStars())/420")
+            statRow("Shifts cleared", "\(store.save.stats.shiftsCleared)")
+            statRow("Tons moved", "\(store.save.stats.tonsServed)")
+            statRow("Ships worked", "\(store.save.stats.shipsServed)")
+            statRow("Ships turned away", "\(store.save.stats.shipsLost)")
+            statRow("Groundings", "\(store.save.stats.groundings)")
+            statRow("Best Watch run", "\(store.save.watchBestTons) t")
+            statRow("Stars collected", "\(store.totalStars())/\(HJCatalog.totalShifts * 3)")
         }
         .padding(16)
         .background(RoundedRectangle(cornerRadius: 16).fill(HJTheme.cardBG))
@@ -73,7 +73,7 @@ struct HJAwardsView: View {
             Spacer()
             Text(value)
                 .font(HJTheme.mono(13))
-                .foregroundColor(HJTheme.navy)
+                .foregroundColor(HJTheme.cyanSoft)
         }
     }
 
@@ -82,16 +82,16 @@ struct HJAwardsView: View {
         return HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(unlocked ? HJTheme.sunGold : HJTheme.navy.opacity(0.1))
+                    .fill(unlocked ? HJTheme.gold : HJTheme.cyanSoft.opacity(0.1))
                     .frame(width: 42, height: 42)
                 HJTrophyShape()
-                    .fill(unlocked ? HJTheme.navy : HJTheme.navy.opacity(0.3))
+                    .fill(unlocked ? HJTheme.cyanSoft : HJTheme.cyanSoft.opacity(0.3))
                     .frame(width: 20, height: 20)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Text(achievement.title)
                     .font(HJTheme.body(14, weight: .bold))
-                    .foregroundColor(unlocked ? HJTheme.navy : HJTheme.navy.opacity(0.55))
+                    .foregroundColor(unlocked ? HJTheme.cyanSoft : HJTheme.cyanSoft.opacity(0.55))
                 Text(achievement.detail)
                     .font(HJTheme.body(12))
                     .foregroundColor(HJTheme.inkSoft)
@@ -100,7 +100,7 @@ struct HJAwardsView: View {
             Spacer()
             if unlocked {
                 HJCheckShape()
-                    .stroke(HJTheme.sunGold, style: StrokeStyle(lineWidth: 2.4, lineCap: .round, lineJoin: .round))
+                    .stroke(HJTheme.gold, style: StrokeStyle(lineWidth: 2.4, lineCap: .round, lineJoin: .round))
                     .frame(width: 16, height: 16)
             }
         }

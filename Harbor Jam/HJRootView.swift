@@ -7,14 +7,16 @@ struct HJRootView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            HJTheme.chartDeep.ignoresSafeArea()
+
             VStack(spacing: 0) {
                 Group {
                     switch selectedTab {
                     case 0:
-                        NavigationView { HJHarborView() }
+                        NavigationView { HJPortsPlaceholder() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 1:
-                        NavigationView { HJDailyView() }
+                        NavigationView { HJWatchPlaceholder() }
                             .navigationViewStyle(StackNavigationViewStyle())
                     case 2:
                         NavigationView { HJAwardsView() }
@@ -29,17 +31,22 @@ struct HJRootView: View {
 
             tabBar
         }
-        .preferredColorScheme(.light)
+        .preferredColorScheme(.dark)
+        .onAppear {
+            #if DEBUG
+            assert(HJSprite.missing.isEmpty, "missing sprites: \(HJSprite.missing)")
+            #endif
+        }
     }
 
     private var tabBar: some View {
         HStack(spacing: 0) {
-            tabButton(index: 0, label: "Harbor") {
+            tabButton(index: 0, label: "Ports") {
                 AnyView(HJWaveShape()
                     .stroke(iconColor(0), style: StrokeStyle(lineWidth: 2.2, lineCap: .round))
                     .frame(width: 26, height: 17))
             }
-            tabButton(index: 1, label: "Daily") {
+            tabButton(index: 1, label: "Watch") {
                 AnyView(HJPulseShape()
                     .stroke(iconColor(1), style: StrokeStyle(lineWidth: 2.2, lineCap: .round, lineJoin: .round))
                     .frame(width: 24, height: 18))
@@ -56,20 +63,20 @@ struct HJRootView: View {
             }
         }
         // iPad: four tabs spread across 1024pt would strand each label in its
-        // own quadrant. Cap the button row and re-centre it — the cap is applied
-        // BEFORE the padding/background so the white bar still spans full width.
+        // own quadrant. Cap the button row and re-centre it — the cap applies
+        // BEFORE the padding/background so the bar still spans full width.
         .hjColumn(HJLayout.tabBarColumn, hSize)
         .padding(.top, 10)
         .padding(.bottom, 6)
         .background(
-            Color.white
-                .shadow(color: HJTheme.navy.opacity(0.08), radius: 8, y: -3)
+            HJTheme.cardBG
+                .overlay(Rectangle().fill(HJTheme.contour.opacity(0.5)).frame(height: 1), alignment: .top)
                 .edgesIgnoringSafeArea(.bottom)
         )
     }
 
     private func iconColor(_ index: Int) -> Color {
-        selectedTab == index ? HJTheme.navy : HJTheme.navy.opacity(0.35)
+        selectedTab == index ? HJTheme.cyan : HJTheme.cyanSoft.opacity(0.35)
     }
 
     private func tabButton(index: Int, label: String, @ViewBuilder icon: () -> AnyView) -> some View {
@@ -82,6 +89,33 @@ struct HJRootView: View {
                     .foregroundColor(iconColor(index))
             }
             .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
         }
+    }
+}
+
+/// Replaced by `HJPortsView` in the ports task. Present so the app builds and
+/// runs at every commit rather than only at the end.
+private struct HJPortsPlaceholder: View {
+    var body: some View {
+        ZStack {
+            HJTheme.chartDeep.ignoresSafeArea()
+            Text("Ports")
+                .font(HJTheme.display(24))
+                .foregroundColor(HJTheme.cyan)
+        }
+        .navigationBarHidden(true)
+    }
+}
+
+private struct HJWatchPlaceholder: View {
+    var body: some View {
+        ZStack {
+            HJTheme.chartDeep.ignoresSafeArea()
+            Text("Watch")
+                .font(HJTheme.display(24))
+                .foregroundColor(HJTheme.cyan)
+        }
+        .navigationBarHidden(true)
     }
 }

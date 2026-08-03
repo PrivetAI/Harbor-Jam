@@ -9,49 +9,37 @@
 /* Begin PBXBuildFile section */
 		0202D9932DE6F233E391BC8E /* HarborJamApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09216A650447FE6B08DEE37B /* HarborJamApp.swift */; };
 		C0DEAD0000000000000002 /* HJAdaptive.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DEAD0000000000000001 /* HJAdaptive.swift */; };
+		C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000003 /* HJShiftCatalog.swift */; };
+		C0DE520000000000000002 /* HJSim.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000002 /* HJSim.swift */; };
 		C0DE520000000000000001 /* HJSimModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000001 /* HJSimModel.swift */; };
 		C0DE520000000000000004 /* HJSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000004 /* HJSprites.swift */; };
 		03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* HJTheme.swift */; };
-		05A74D6449BB2492844769E8 /* HJModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0500D6B061589BA599DADCD /* HJModels.swift */; };
 		0943364D376D3F1FE86C8C61 /* HJSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103E9862DA27096EC4D1AEA /* HJSave.swift */; };
-		1879DB51491278E6556EDA4E /* HJEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5D4E223A138C2A313D5698 /* HJEngine.swift */; };
 		1B545AB51154A6905EA6DA9A /* HarborJamLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32480F6F9A77D3C7696964C /* HarborJamLoadingScreen.swift */; };
 		21428B0C1EE585D0E999BDC4 /* HJMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFAE8E20E207B3D49465793 /* HJMoreView.swift */; };
 		379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 569E6B683C26E491764BED09 /* Assets.xcassets */; };
 		C0DE52000000000000000B /* shifts.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000B /* shifts.json */; };
 		672B279B8948B87FBEEA4306 /* HarborJamWebPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */; };
-		6B3A96B9915A1D32A2B4AEF1 /* HJGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C06264659DAF17535770D6 /* HJGenerator.swift */; };
 		820482F968DA3A71D49B1CED /* HJRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB770381C26A33FD4F1028B /* HJRootView.swift */; };
-		8B75CA9004D84FBEADD3D8AA /* HJBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7C2EBDCC24F1B273A36CEF /* HJBoardView.swift */; };
-		AA2C5FCBFD0B9476371F0352 /* HJDailyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06DD81753C5E36E0C7F4F1EA /* HJDailyView.swift */; };
-		AC3CAA87EF7688E101C1EBB6 /* HJGameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38B0B43018A4FD82B03831D /* HJGameView.swift */; };
-		AD5640931466FE19504A5F1F /* HJGameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B51920B8D01771FBEC31AF /* HJGameViewModel.swift */; };
 		DEFDC4934A20DC76712A9AFD /* HJAwardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240BCDE9D72B6C1A064C6B4E /* HJAwardsView.swift */; };
-		F991BD028DED1DBA63747B9B /* HJHarborView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F2FFEF8ED1D6A82FEFA387 /* HJHarborView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C0DEAD0000000000000001 /* HJAdaptive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJAdaptive.swift; sourceTree = "<group>"; };
+		C0DE510000000000000003 /* HJShiftCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftCatalog.swift; sourceTree = "<group>"; };
+		C0DE510000000000000002 /* HJSim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSim.swift; sourceTree = "<group>"; };
 		C0DE510000000000000001 /* HJSimModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSimModel.swift; sourceTree = "<group>"; };
 		C0DE510000000000000004 /* HJSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSprites.swift; sourceTree = "<group>"; };
-		00B51920B8D01771FBEC31AF /* HJGameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJGameViewModel.swift; sourceTree = "<group>"; };
-		06DD81753C5E36E0C7F4F1EA /* HJDailyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJDailyView.swift; sourceTree = "<group>"; };
 		09216A650447FE6B08DEE37B /* HarborJamApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamApp.swift; sourceTree = "<group>"; };
-		1E7C2EBDCC24F1B273A36CEF /* HJBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJBoardView.swift; sourceTree = "<group>"; };
 		240BCDE9D72B6C1A064C6B4E /* HJAwardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJAwardsView.swift; sourceTree = "<group>"; };
 		4EFAE8E20E207B3D49465793 /* HJMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJMoreView.swift; sourceTree = "<group>"; };
 		569E6B683C26E491764BED09 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C0DE51000000000000000B /* shifts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = shifts.json; sourceTree = "<group>"; };
-		57F2FFEF8ED1D6A82FEFA387 /* HJHarborView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJHarborView.swift; sourceTree = "<group>"; };
 		6103E9862DA27096EC4D1AEA /* HJSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSave.swift; sourceTree = "<group>"; };
 		8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamWebPanel.swift; sourceTree = "<group>"; };
-		91C06264659DAF17535770D6 /* HJGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJGenerator.swift; sourceTree = "<group>"; };
-		C0500D6B061589BA599DADCD /* HJModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJModels.swift; sourceTree = "<group>"; };
 		C448DC7CBFBEE35B4B525025 /* Harbor Jam.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Harbor Jam.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E32480F6F9A77D3C7696964C /* HarborJamLoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamLoadingScreen.swift; sourceTree = "<group>"; };
-		E38B0B43018A4FD82B03831D /* HJGameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJGameView.swift; sourceTree = "<group>"; };
 		E57C6715440CFBAEB4F58D73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		ED5D4E223A138C2A313D5698 /* HJEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJEngine.swift; sourceTree = "<group>"; };
 		ED7ABB41533F46E128EC3724 /* HJTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJTheme.swift; sourceTree = "<group>"; };
 		FBB770381C26A33FD4F1028B /* HJRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJRootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -82,17 +70,11 @@
 				8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */,
 				C0DEAD0000000000000001 /* HJAdaptive.swift */,
 				240BCDE9D72B6C1A064C6B4E /* HJAwardsView.swift */,
-				1E7C2EBDCC24F1B273A36CEF /* HJBoardView.swift */,
-				06DD81753C5E36E0C7F4F1EA /* HJDailyView.swift */,
-				ED5D4E223A138C2A313D5698 /* HJEngine.swift */,
-				E38B0B43018A4FD82B03831D /* HJGameView.swift */,
-				00B51920B8D01771FBEC31AF /* HJGameViewModel.swift */,
-				91C06264659DAF17535770D6 /* HJGenerator.swift */,
-				57F2FFEF8ED1D6A82FEFA387 /* HJHarborView.swift */,
-				C0500D6B061589BA599DADCD /* HJModels.swift */,
 				4EFAE8E20E207B3D49465793 /* HJMoreView.swift */,
 				FBB770381C26A33FD4F1028B /* HJRootView.swift */,
 				6103E9862DA27096EC4D1AEA /* HJSave.swift */,
+				C0DE510000000000000003 /* HJShiftCatalog.swift */,
+				C0DE510000000000000002 /* HJSim.swift */,
 				C0DE510000000000000001 /* HJSimModel.swift */,
 				C0DE510000000000000004 /* HJSprites.swift */,
 				ED7ABB41533F46E128EC3724 /* HJTheme.swift */,
@@ -176,17 +158,11 @@
 			files = (
 				C0DEAD0000000000000002 /* HJAdaptive.swift in Sources */,
 				DEFDC4934A20DC76712A9AFD /* HJAwardsView.swift in Sources */,
-				8B75CA9004D84FBEADD3D8AA /* HJBoardView.swift in Sources */,
-				AA2C5FCBFD0B9476371F0352 /* HJDailyView.swift in Sources */,
-				1879DB51491278E6556EDA4E /* HJEngine.swift in Sources */,
-				AC3CAA87EF7688E101C1EBB6 /* HJGameView.swift in Sources */,
-				AD5640931466FE19504A5F1F /* HJGameViewModel.swift in Sources */,
-				6B3A96B9915A1D32A2B4AEF1 /* HJGenerator.swift in Sources */,
-				F991BD028DED1DBA63747B9B /* HJHarborView.swift in Sources */,
-				05A74D6449BB2492844769E8 /* HJModels.swift in Sources */,
 				21428B0C1EE585D0E999BDC4 /* HJMoreView.swift in Sources */,
 				820482F968DA3A71D49B1CED /* HJRootView.swift in Sources */,
 				0943364D376D3F1FE86C8C61 /* HJSave.swift in Sources */,
+				C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */,
+				C0DE520000000000000002 /* HJSim.swift in Sources */,
 				C0DE520000000000000001 /* HJSimModel.swift in Sources */,
 				C0DE520000000000000004 /* HJSprites.swift in Sources */,
 				03001EE2CCE333ABA05D4257 /* HJTheme.swift in Sources */,
