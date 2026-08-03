@@ -17,11 +17,16 @@ struct HJHarborBoardView: View {
 
     private var slotCount: Int { vm.sim.def.harbor.slots.count }
 
-    private var boardWidth: CGFloat {
-        let raw = min(screenSize.width, HJLayout.wide(hSize) ? HJLayout.boardColumn : screenSize.width)
-        return raw - 24
+    /// Berths never stretch past this. Without a cap, a 12-berth quay on an iPad
+    /// gives 100pt cells whose art cannot fill them, and the quay wall visibly
+    /// breaks into segments.
+    private static let maxSlotWidth: CGFloat = 62
+
+    private var slotWidth: CGFloat {
+        let available = min(screenSize.width, HJLayout.wide(hSize) ? HJLayout.boardColumn : screenSize.width) - 24
+        return min(available / CGFloat(slotCount), Self.maxSlotWidth)
     }
-    private var slotWidth: CGFloat { boardWidth / CGFloat(slotCount) }
+    private var boardWidth: CGFloat { slotWidth * CGFloat(slotCount) }
     private var quayHeight: CGFloat { min(72, slotWidth * 1.5) }
     private var hullHeight: CGFloat { min(46, slotWidth * 0.95) }
 
@@ -49,6 +54,11 @@ struct HJHarborBoardView: View {
                         .frame(width: slotWidth, height: quayHeight)
                 }
             }
+            // One continuous wall across the whole quay, drawn by the view
+            // rather than baked into each berth sprite.
+            Rectangle()
+                .fill(HJTheme.gold)
+                .frame(width: boardWidth, height: 5)
             berthedHulls
         }
         .frame(width: boardWidth, height: quayHeight)
