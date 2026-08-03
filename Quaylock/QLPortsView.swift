@@ -16,7 +16,7 @@ struct QLPortsView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 112)
+                .padding(.bottom, 20)
                 .hjColumn(QLLayout.harborColumn, hSize)
             }
         }
@@ -159,7 +159,7 @@ struct QLShiftGridView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 112)
+                .padding(.bottom, 20)
                 .hjColumn(QLLayout.levelGridColumn, hSize)
             }
         }

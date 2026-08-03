@@ -21,7 +21,6 @@
 		C0DE520000000000000004 /* QLSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000004 /* QLSprites.swift */; };
 		03001EE2CCE333ABA05D4257 /* QLTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7ABB41533F46E128EC3724 /* QLTheme.swift */; };
 		0943364D376D3F1FE86C8C61 /* QLSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6103E9862DA27096EC4D1AEA /* QLSave.swift */; };
-		1B545AB51154A6905EA6DA9A /* QuaylockLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */; };
 		21428B0C1EE585D0E999BDC4 /* QLMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFAE8E20E207B3D49465793 /* QLMoreView.swift */; };
 		379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 569E6B683C26E491764BED09 /* Assets.xcassets */; };
 		C0DE52000000000000000B /* shifts.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000B /* shifts.json */; };
@@ -48,7 +47,6 @@
 		C0DE51000000000000000B /* shifts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = shifts.json; sourceTree = "<group>"; };
 		6103E9862DA27096EC4D1AEA /* QLSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLSave.swift; sourceTree = "<group>"; };
 		C448DC7CBFBEE35B4B525025 /* Quaylock.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "Quaylock.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuaylockLoadingScreen.swift; sourceTree = "<group>"; };
 		E57C6715440CFBAEB4F58D73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		ED7ABB41533F46E128EC3724 /* QLTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLTheme.swift; sourceTree = "<group>"; };
 		FBB770381C26A33FD4F1028B /* QLRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QLRootView.swift; sourceTree = "<group>"; };
@@ -76,7 +74,6 @@
 			children = (
 				569E6B683C26E491764BED09 /* Assets.xcassets */,
 				09216A650447FE6B08DEE37B /* QuaylockApp.swift */,
-				E32480F6F9A77D3C7696964C /* QuaylockLoadingScreen.swift */,
 				C0DEAD0000000000000001 /* QLAdaptive.swift */,
 				240BCDE9D72B6C1A064C6B4E /* QLAwardsView.swift */,
 				4EFAE8E20E207B3D49465793 /* QLMoreView.swift */,
@@ -188,7 +185,6 @@
 				C0DE520000000000000004 /* QLSprites.swift in Sources */,
 				03001EE2CCE333ABA05D4257 /* QLTheme.swift in Sources */,
 				0202D9932DE6F233E391BC8E /* QuaylockApp.swift in Sources */,
-				1B545AB51154A6905EA6DA9A /* QuaylockLoadingScreen.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

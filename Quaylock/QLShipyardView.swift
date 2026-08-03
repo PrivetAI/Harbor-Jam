@@ -20,7 +20,7 @@ struct QLShipyardView: View {
                         .padding(.top, 6)
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 112)
+                .padding(.bottom, 20)
                 .hjColumn(QLLayout.panelColumn, hSize)
             }
         }

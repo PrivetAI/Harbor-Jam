@@ -25,7 +25,7 @@ struct QLMoreView: View {
                         .hjCap(QLLayout.panelColumn, hSize)
                 }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 110)
+                .padding(.bottom, 20)
                 .hjColumn(QLLayout.moreColumn, hSize)
             }
         }

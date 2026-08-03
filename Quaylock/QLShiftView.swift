@@ -147,7 +147,7 @@ struct QLShiftView: View {
                 .foregroundColor(QLTheme.chartDeep)
                 .padding(.horizontal, 14).padding(.vertical, 8)
                 .background(Capsule().fill(QLTheme.warn))
-                .padding(.bottom, 190)
+                .padding(.bottom, 120)
         }
         .allowsHitTesting(false)
     }
@@ -235,7 +235,7 @@ struct QLShiftView: View {
             .background(RoundedRectangle(cornerRadius: 14).fill(QLTheme.cardBG))
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(QLTheme.contour, lineWidth: 1))
             .padding(.horizontal, 24)
-            .padding(.bottom, 104)
+            .padding(.bottom, 24)
         }
     }
 

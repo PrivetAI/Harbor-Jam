@@ -52,7 +52,7 @@ struct QLWatchView: View {
                     .contentShape(Rectangle())
             }
             Spacer()
-            Spacer().frame(height: 96)
+            Spacer().frame(height: 24)
         }
     }
 }

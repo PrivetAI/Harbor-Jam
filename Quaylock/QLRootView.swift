@@ -6,42 +6,40 @@ struct QLRootView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            QLTheme.chartDeep.ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                Group {
-                    switch selectedTab {
-                    case 0:
-                        NavigationView { QLPortsView() }
-                            .navigationViewStyle(StackNavigationViewStyle())
-                    case 1:
-                        NavigationView { QLWatchView() }
-                            .navigationViewStyle(StackNavigationViewStyle())
-                    case 2:
-                        NavigationView { QLAwardsView() }
-                            .navigationViewStyle(StackNavigationViewStyle())
-                    default:
-                        NavigationView { QLMoreView() }
-                            .navigationViewStyle(StackNavigationViewStyle())
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // `safeAreaInset` rather than a ZStack overlay or a plain VStack row.
+        // `NavigationView` on iOS 15 hosts a UINavigationController whose view
+        // reaches past its SwiftUI frame and swallows touches on anything
+        // stacked beside it — the bar drew correctly but its buttons never
+        // fired, as an overlay, as a VStack sibling, with Button and with
+        // onTapGesture alike. safeAreaInset is the one arrangement UIKit is
+        // told about, so the bar both lays out and receives taps.
+        Group {
+            switch selectedTab {
+            case 0:
+                NavigationView { QLPortsView() }
+                    .navigationViewStyle(StackNavigationViewStyle())
+            case 1:
+                NavigationView { QLWatchView() }
+                    .navigationViewStyle(StackNavigationViewStyle())
+            case 2:
+                NavigationView { QLAwardsView() }
+                    .navigationViewStyle(StackNavigationViewStyle())
+            default:
+                NavigationView { QLMoreView() }
+                    .navigationViewStyle(StackNavigationViewStyle())
             }
-
-            tabBar
-
-            // LAST sibling on purpose: an opaque band over the top safe area, so
-            // scrolled content stops drawing across the clock. Anything added
-            // after this would sit under it.
-            VStack(spacing: 0) {
-                QLTheme.chartDeep
-                    .frame(height: QLSafeArea.top)
-                Spacer(minLength: 0)
-            }
-            .ignoresSafeArea(edges: .top)
-            .allowsHitTesting(false)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // NO opaque band over the top safe area here, deliberately. Scrolled
+        // content does pass under the clock, which is ordinary for a full-bleed
+        // scroll view — but every band formulation tried (ZStack sibling, root
+        // overlay, content-scoped overlay, with and without
+        // `allowsHitTesting(false)`) killed the tab bar outright: `ignoresSafeArea`
+        // lets the band escape its container and eat the bar's touches, and the
+        // bar then draws normally while doing nothing. A cosmetic bleed beats a
+        // dead tab bar. Fix it per screen, inside each ScrollView, if at all.
+        .safeAreaInset(edge: .bottom, spacing: 0) { tabBar }
+        .background(QLTheme.chartDeep.ignoresSafeArea())
         .preferredColorScheme(.dark)
         .onAppear {
             #if DEBUG
@@ -90,18 +88,23 @@ struct QLRootView: View {
         selectedTab == index ? QLTheme.cyan : QLTheme.cyanSoft.opacity(0.35)
     }
 
+    /// A plain tappable cell rather than a `Button`. The Button form stopped
+    /// delivering its action here entirely — the label drew, the row laid out,
+    /// and taps went nowhere — while a bare `onTapGesture` on the same shape
+    /// works. Keep the explicit contentShape: the label is a Shape plus text
+    /// over empty space, which on its own has almost no hit area.
     private func tabButton(index: Int, label: String, @ViewBuilder icon: () -> AnyView) -> some View {
-        Button(action: { selectedTab = index }) {
-            VStack(spacing: 4) {
-                icon()
-                    .frame(height: 24)
-                Text(label)
-                    .font(QLTheme.body(10, weight: selectedTab == index ? .bold : .medium))
-                    .foregroundColor(iconColor(index))
-            }
-            .frame(maxWidth: .infinity)
-            .contentShape(Rectangle())
+        VStack(spacing: 4) {
+            icon()
+                .frame(height: 24)
+            Text(label)
+                .font(QLTheme.body(10, weight: selectedTab == index ? .bold : .medium))
+                .foregroundColor(iconColor(index))
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 46)
+        .contentShape(Rectangle())
+        .onTapGesture { selectedTab = index }
     }
 }
 
