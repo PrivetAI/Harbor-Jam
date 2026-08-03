@@ -28,12 +28,21 @@ struct HJHarborBoardView: View {
     }
     private var boardWidth: CGFloat { slotWidth * CGFloat(slotCount) }
     private var quayHeight: CGFloat { min(72, slotWidth * 1.5) }
-    private var hullHeight: CGFloat { min(46, slotWidth * 0.95) }
+    private var hullHeight: CGFloat { min(50, slotWidth * 1.05) }
 
     var body: some View {
         VStack(spacing: 0) {
-            quayLayer
-            waterLayer
+            // Quay and water share one ZStack so a moored hull can hang below
+            // the wall. Drawn inside the quay layer instead, the water layer's
+            // opaque background — the next child of the VStack — paints over
+            // everything that overflows, and the ships vanish.
+            ZStack(alignment: .topLeading) {
+                VStack(spacing: 0) {
+                    quayLayer
+                    waterLayer
+                }
+                berthedHulls
+            }
             roadsteadLayer
             // Clearance for the floating tab bar. A .safeAreaInset on a stack
             // NavigationView does not reach a pushed screen, so the padding has
@@ -59,7 +68,6 @@ struct HJHarborBoardView: View {
             Rectangle()
                 .fill(HJTheme.gold)
                 .frame(width: boardWidth, height: 5)
-            berthedHulls
         }
         .frame(width: boardWidth, height: quayHeight)
     }
@@ -109,8 +117,11 @@ struct HJHarborBoardView: View {
         ForEach(vm.sim.ships.filter { $0.holdsBerth }) { ship in
             hullView(ship, width: slotWidth * CGFloat(ship.length))
                 .frame(width: slotWidth * CGFloat(ship.length), height: hullHeight)
+                // Moored alongside, just under the wall — not straddling it.
+                // Straddling buried the upper half of every hull behind the
+                // berth art, hiding the cargo mark and the draft.
                 .offset(x: CGFloat(ship.berthStart ?? 0) * slotWidth,
-                        y: quayHeight - hullHeight / 2)
+                        y: quayHeight - hullHeight * 0.12)
                 .opacity(ship.state == .transitingIn ? 0.45 : 1)
                 .onTapGesture {
                     if ship.state == .berthed && ship.unloadLeft <= 0 { vm.send(shipID: ship.id) }
