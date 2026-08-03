@@ -41,8 +41,35 @@ case "policies":
     }
     exit(0)
 
+case "gate":
+    let (ok, text, _) = forgeGate()
+    print(text)
+    exit(ok ? 0 : 1)
+
+case "bake":
+    let (ok, text, reports) = forgeGate()
+    print(text)
+    guard ok else { exit(1) }
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    let data = try! encoder.encode(reports.map { $0.def })
+    try! data.write(to: URL(fileURLWithPath: "Harbor Jam/shifts.json"))
+    print("baked \(reports.count) shifts to Harbor Jam/shifts.json (\(data.count) bytes)")
+    exit(0)
+
+case "verify":
+    let data = try! Data(contentsOf: URL(fileURLWithPath: "Harbor Jam/shifts.json"))
+    let defs = try! JSONDecoder().decode([HJShiftDef].self, from: data)
+    var bad = 0
+    for d in defs where forgeRun(def: d, upgrades: .zero, policy: .smart, seed: 1).stars < 1 {
+        bad += 1
+        print("UNCLEARABLE \(d.port)-\(d.shift)")
+    }
+    print(bad == 0 ? "VERIFY OK — \(defs.count) shifts clearable" : "VERIFY FAILED — \(bad)")
+    exit(bad == 0 ? 0 : 1)
+
 default:
     print("unknown command: \(command)")
-    print("usage: harborforge [test|generate|policies]")
+    print("usage: harborforge [test|generate|policies|gate|bake|verify]")
     exit(2)
 }

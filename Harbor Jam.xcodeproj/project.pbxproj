@@ -18,6 +18,7 @@
 		1B545AB51154A6905EA6DA9A /* HarborJamLoadingScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32480F6F9A77D3C7696964C /* HarborJamLoadingScreen.swift */; };
 		21428B0C1EE585D0E999BDC4 /* HJMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFAE8E20E207B3D49465793 /* HJMoreView.swift */; };
 		379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 569E6B683C26E491764BED09 /* Assets.xcassets */; };
+		C0DE52000000000000000B /* shifts.json in Resources */ = {isa = PBXBuildFile; fileRef = C0DE51000000000000000B /* shifts.json */; };
 		672B279B8948B87FBEEA4306 /* HarborJamWebPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */; };
 		6B3A96B9915A1D32A2B4AEF1 /* HJGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91C06264659DAF17535770D6 /* HJGenerator.swift */; };
 		820482F968DA3A71D49B1CED /* HJRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB770381C26A33FD4F1028B /* HJRootView.swift */; };
@@ -40,6 +41,7 @@
 		240BCDE9D72B6C1A064C6B4E /* HJAwardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJAwardsView.swift; sourceTree = "<group>"; };
 		4EFAE8E20E207B3D49465793 /* HJMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJMoreView.swift; sourceTree = "<group>"; };
 		569E6B683C26E491764BED09 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C0DE51000000000000000B /* shifts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = shifts.json; sourceTree = "<group>"; };
 		57F2FFEF8ED1D6A82FEFA387 /* HJHarborView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJHarborView.swift; sourceTree = "<group>"; };
 		6103E9862DA27096EC4D1AEA /* HJSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSave.swift; sourceTree = "<group>"; };
 		8F6E813BA2E19BC0017E4980 /* HarborJamWebPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarborJamWebPanel.swift; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 				C0DE510000000000000001 /* HJSimModel.swift */,
 				C0DE510000000000000004 /* HJSprites.swift */,
 				ED7ABB41533F46E128EC3724 /* HJTheme.swift */,
+				C0DE51000000000000000B /* shifts.json */,
 				E57C6715440CFBAEB4F58D73 /* Info.plist */,
 			);
 			path = "Harbor Jam";
@@ -160,6 +163,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				379ED52CC4E8AA0A381B3FB1 /* Assets.xcassets in Resources */,
+				C0DE52000000000000000B /* shifts.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

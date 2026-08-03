@@ -271,7 +271,13 @@ struct HJSim {
     /// Revenue plus whatever was saved against par. Speed is in the score on
     /// purpose: a badly packed quay and a carelessly spent channel do not show up
     /// as lost ships, they show up as a shift that drags.
+    ///
+    /// A failed shift collects no speed bonus. Without this guard, running the
+    /// harbour into the ground at tick 400 scored *higher* than working a full
+    /// shift cleanly, because failing early left a huge margin against par — the
+    /// greedy policy out-scored the competent one on exactly that.
     func score() -> Int {
+        guard !isFailed else { return counters.revenue }
         let finished = endTick ?? tick
         let speed = max(0, def.parTicks - finished) * HJTuning.speedRate
         return counters.revenue + speed

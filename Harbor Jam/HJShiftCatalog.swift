@@ -35,7 +35,11 @@ enum HJTuning {
     }
 
     static let vipRateMultiplier = 3
-    static let speedRate = 2            // score per tick saved against par
+    static let speedRate = 1            // score per tick saved against par
+    /// Par is set this far above the reference policy's own finishing time.
+    /// At 100 the reference policy's speed bonus would be exactly zero, which
+    /// makes the whole speed term unreachable for a player of that standard.
+    static let parCushionPercent = 115
     static let baseReputation = 3
     static let target3Percent = 92      // of policy S's score
     static let target2Percent = 70
@@ -134,10 +138,14 @@ enum HJCatalog {
         HJPortTemplate(index: 6, name: "Deepwater Port", tagline: "Big hulls, deep water",
                        slotCount: 12, depthRange: 3...7,
                        equipment: [.crane, .conveyor, .pipeline],
-                       cargoes: [.container, .bulk, .liquid], arrivalGap: 115...170,
+                       // Longer hulls than any other port: a mean length of 4 on
+                       // a 12-berth quay means only three ships fit at once, so
+                       // this port needs a slacker arrival stream than port 7
+                       // despite looking smaller on paper.
+                       cargoes: [.container, .bulk, .liquid], arrivalGap: 135...195,
                        channelTransitTicks: 40,
                        tideAmplitude: 2, tideStepTicks: 110,
-                       shipLengths: 3...5, draftRange: 2...5, shipCount: 20...26,
+                       shipLengths: 3...5, draftRange: 2...5, shipCount: 18...23,
                        usesOutages: true, usesStorms: true, usesVIP: false,
                        longShipTransitPenalty: true),
         HJPortTemplate(index: 7, name: "Grand Harbor", tagline: "Everything at once",
@@ -150,4 +158,30 @@ enum HJCatalog {
                        usesOutages: true, usesStorms: true, usesVIP: true,
                        longShipTransitPenalty: true),
     ]
+}
+
+// MARK: - The baked corpus
+
+extension HJCatalog {
+    private static var shiftCache: [HJShiftDef]? = nil
+
+    /// The 84 shifts accepted by the offline gate. Generation does not happen on
+    /// the device: a shift is only in this file because greedy play measurably
+    /// lost ground on it, and that decision needs the whole policy harness.
+    static func loadShifts() -> [HJShiftDef] {
+        if let c = shiftCache { return c }
+        guard let url = Bundle.main.url(forResource: "shifts", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode([HJShiftDef].self, from: data)
+        else {
+            shiftCache = []
+            return []
+        }
+        shiftCache = decoded
+        return decoded
+    }
+
+    static func shift(port: Int, shift: Int) -> HJShiftDef? {
+        loadShifts().first { $0.port == port && $0.shift == shift }
+    }
 }
