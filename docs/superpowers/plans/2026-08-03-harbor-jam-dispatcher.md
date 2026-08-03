@@ -491,22 +491,21 @@ enum HJCatalog {
 }
 ```
 
-- [ ] **Step 2: Register in the pbxproj**
+- [ ] **Step 2: Do NOT register this file in the pbxproj yet**
 
-```
-PBXBuildFile:      C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000003 /* HJShiftCatalog.swift */; };
-PBXFileReference:  C0DE510000000000000003 /* HJShiftCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftCatalog.swift; sourceTree = "<group>"; };
-group children:    C0DE510000000000000003 /* HJShiftCatalog.swift */,
-Sources phase:     C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */,
-```
+`HJShiftCatalog.swift` declares `enum HJCatalog`, and the old `HJModels.swift` — still in the target until Task 9 — declares an `enum HJCatalog` of its own. Adding both to the Sources phase is an invalid redeclaration and the app stops compiling.
 
-- [ ] **Step 3: Verify headless and app builds**
+Renaming the new one is the wrong fix: Tasks 5, 6, 7, 13 and 14 all refer to `HJCatalog`, and a later rename back is exactly the kind of sweep that leaks into string literals.
+
+Tasks 4–7 are headless — they compile with `swiftc` against file paths and never consult the Xcode target — so the file simply stays out of the target until `HJModels.swift` leaves it. **Task 9 Step 2a registers `HJShiftCatalog.swift` and `HJSim.swift` together with the deletions.**
+
+- [ ] **Step 3: Verify the headless build, and that the app is untouched**
 
 ```bash
 cd "/Users/vik/Documents/development/for_human_review_apps/Harbor Jam" && swiftc -typecheck "Harbor Jam/HJSimModel.swift" "Harbor Jam/HJShiftCatalog.swift" && echo "HEADLESS OK"
 ```
 
-Expected: `HEADLESS OK`. Then the same `xcodebuild` Debug command as Task 2 Step 4, expecting `** BUILD SUCCEEDED **`.
+Expected: `HEADLESS OK`. Then the same `xcodebuild` Debug command as Task 2 Step 4, expecting `** BUILD SUCCEEDED **` — the app must still build precisely because the new file is not in the target.
 
 - [ ] **Step 4: Commit**
 
@@ -1932,6 +1931,19 @@ git rm "Harbor Jam/HJEngine.swift" "Harbor Jam/HJGenerator.swift" "Harbor Jam/HJ
 ```
 
 Remove each of those eight files from all four pbxproj locations (`PBXBuildFile`, `PBXFileReference`, group `children`, `Sources` phase). Their object ids are listed in the pbxproj and are retired, not reused.
+
+- [ ] **Step 2a: Register the two sim files that Task 3 and Task 4 deliberately left out of the target**
+
+`HJShiftCatalog.swift` and `HJSim.swift` were kept out of the Sources phase because `HJModels.swift` owned the name `HJCatalog`. That file is gone as of Step 2, so register both now, in all four places each:
+
+```
+PBXBuildFile:      C0DE520000000000000003 /* HJShiftCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000003 /* HJShiftCatalog.swift */; };
+PBXBuildFile:      C0DE520000000000000002 /* HJSim.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0DE510000000000000002 /* HJSim.swift */; };
+PBXFileReference:  C0DE510000000000000003 /* HJShiftCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJShiftCatalog.swift; sourceTree = "<group>"; };
+PBXFileReference:  C0DE510000000000000002 /* HJSim.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HJSim.swift; sourceTree = "<group>"; };
+group children:    both file refs
+Sources phase:     both build files
+```
 
 - [ ] **Step 3: Keep the app compiling with placeholder screens**
 
