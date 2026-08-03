@@ -9,6 +9,11 @@ struct HJHarborView: View {
             HJTheme.cream.ignoresSafeArea()
             ScrollView {
                 VStack(spacing: 14) {
+                    HJSprite.hull4.image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 300)
+
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Harbor Jam")
