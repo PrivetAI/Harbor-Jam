@@ -5,6 +5,7 @@ struct QLMoreView: View {
     @Environment(\.horizontalSizeClass) private var hSize
 
     @State private var showResetAlert = false
+    @State private var showPrivacy = false
 
     var body: some View {
         ZStack {
@@ -29,6 +30,10 @@ struct QLMoreView: View {
                 .hjColumn(QLLayout.moreColumn, hSize)
             }
         }
+        .sheet(isPresented: $showPrivacy) {
+            QuaylockWebPanel(urlString: "https://example.com")
+                .edgesIgnoringSafeArea(.bottom)
+        }
         .alert(isPresented: $showResetAlert) {
             Alert(title: Text("Reset Progress?"),
                   message: Text("All stars, records, achievements and stats will be permanently erased."),
@@ -46,6 +51,16 @@ struct QLMoreView: View {
             toggleRow("Haptics", isOn: Binding(
                 get: { store.save.hapticsOn },
                 set: { store.save.hapticsOn = $0; store.persist() }))
+            Button(action: { showPrivacy = true }) {
+                HStack {
+                    Text("Privacy Policy")
+                        .font(QLTheme.body(14, weight: .semibold))
+                        .foregroundColor(QLTheme.cyanSoft)
+                    Spacer()
+                }
+                .padding(.vertical, 12)
+                .contentShape(Rectangle())
+            }
             Button(action: { showResetAlert = true }) {
                 HStack {
                     Text("Reset Progress")
@@ -54,6 +69,7 @@ struct QLMoreView: View {
                     Spacer()
                 }
                 .padding(.vertical, 12)
+                .contentShape(Rectangle())
             }
         }
         .padding(16)
